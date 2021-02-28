@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Final, top-level theme-->
+    <style name="AppTheme" parent="AppTheme.Dark" />
+
+    <style name="AppTheme.Dark" parent="AppTheme.Light">
+
+        <item name="snackbarStyle">@style/Widget.App.Snackbar.Dark</item>
+
+    </style>
+
+</resources>

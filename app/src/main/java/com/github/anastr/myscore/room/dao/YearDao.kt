@@ -1,0 +1,45 @@
+package com.github.anastr.myscore.room.dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Query
+import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.myscore.room.view.YearWithSemester
+
+@Dao
+interface YearDao: BaseDao<Year> {
+
+//    @Query("SELECT * FROM year ORDER BY year_order ASC")
+//    fun getAllOrdered(): LiveData<List<Year>>
+
+    @Query(
+        """
+        SELECT year.uid, year.year_order, 
+            AVG(CASE WHEN course.semester=0 AND course.theoretical_score + course.practical_score >= :passDegree
+                THEN course.practical_score + course.theoretical_score END) AS semester1Score, 
+            AVG(CASE WHEN course.semester=1 AND course.theoretical_score + course.practical_score >= :passDegree
+                THEN course.practical_score + course.theoretical_score END) AS semester2Score 
+            FROM year 
+            LEFT JOIN course ON year.uid = course.year_id 
+            GROUP BY year.uid 
+            ORDER BY year.year_order ASC 
+    """
+    )
+    fun getAllOrdered(passDegree: Int): LiveData<List<YearWithSemester>>
+
+    @Query(
+        """
+        SELECT AVG(CASE WHEN course.theoretical_score + course.practical_score >= :passDegree
+                THEN course.practical_score + course.theoretical_score END)
+        FROM course
+    """
+    )
+    fun getFinalDegree(passDegree: Int): LiveData<Float?>
+
+    @Query("SELECT COUNT() FROM year")
+    fun getYearsCount(): LiveData<Int>
+
+//    @Query("SELECT * FROM course WHERE uid IN (:courseIds)")
+//    fun loadAllByIds(courseIds: LongArray): List<Course>
+
+}

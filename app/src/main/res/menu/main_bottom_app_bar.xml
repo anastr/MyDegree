@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/year_page_fragment"
+        android:icon="@drawable/ic_years_inbox_24"
+        android:title="@string/years"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/chart_page_fragment"
+        android:icon="@drawable/ic_chart_24"
+        android:title="@string/chart"
+        app:showAsAction="never"
+        />
+</menu>

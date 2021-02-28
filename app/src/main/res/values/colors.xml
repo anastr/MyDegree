@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#388e3c</color>
+    <color name="colorPrimaryDark">#005005</color>
+    <color name="colorAccent">#ea80fc</color>
+
+    <color name="colorSecondary">#00e676</color>
+    <color name="colorOnPrimary">#FFF</color>
+    <color name="colorDots">#DDD</color>
+
+    <color name="nightColorSnackBar">#DDD</color>
+    <color name="nightColorOnSnackBar">#000</color>
+
+    <color name="noneDegree">#9E9E9E</color>
+    <color name="veryLowDegree">#E53935</color>
+    <color name="lowDegree">#F9A825</color>
+    <color name="goodDegree">#0288D1</color>
+    <color name="veryGoodDegree">#388E3C</color>
+</resources>

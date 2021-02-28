@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/year_page_fragment">
+
+    <fragment
+        android:id="@+id/year_page_fragment"
+        android:name="com.github.anastr.myscore.YearListFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_year_list">
+        <action
+            android:id="@+id/action_year_page_fragment_to_courseListFragment"
+            app:destination="@id/courseListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chart_page_fragment"
+        android:name="com.github.anastr.myscore.ChartFragment"
+        android:label="@string/title_chart"
+        tools:layout="@layout/fragment_chart">
+
+    </fragment>
+    <fragment
+        android:id="@+id/courseListFragment"
+        android:name="com.github.anastr.myscore.CourseListFragment"
+        tools:layout="@layout/fragment_course_list" >
+        <action
+            android:id="@+id/action_courseListFragment_to_courseDialog"
+            app:destination="@id/courseDialog" />
+        <argument
+            android:name="yearPosition"
+            app:argType="integer" />
+        <argument
+            android:name="yearId"
+            app:argType="long" />
+        <argument
+            android:name="semester"
+            app:argType="com.github.anastr.myscore.room.entity.Semester" />
+    </fragment>
+    <dialog
+        android:id="@+id/courseDialog"
+        android:name="com.github.anastr.myscore.CourseDialog"
+        android:label="CourseDialog"
+        tools:layout="@layout/dialog_course" >
+        <argument
+            android:name="courseMode"
+            app:argType="com.github.anastr.myscore.CourseMode" />
+    </dialog>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.github.anastr.myscore.SettingsFragment"
+        android:label="@string/title_settings" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.github.anastr.myscore.AboutFragment"
+        android:label="@string/title_about"
+        tools:layout="@layout/fragment_about" />
+</navigation>
