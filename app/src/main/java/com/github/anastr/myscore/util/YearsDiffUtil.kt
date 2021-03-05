@@ -5,7 +5,7 @@ import com.github.anastr.myscore.room.view.YearWithSemester
 
 class YearsDiffUtil(
     private val oldList: List<YearWithSemester>,
-    private val newList: List<YearWithSemester>
+    private val newList: List<YearWithSemester>,
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
 
@@ -17,6 +17,5 @@ class YearsDiffUtil(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition] == newList[newItemPosition]
-                && oldItemPosition == newItemPosition
     }
 }

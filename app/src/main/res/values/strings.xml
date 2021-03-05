@@ -75,6 +75,7 @@
     <string name="firebase_signin_succeeded">مرحباً %s، تم تسجيل الدخول بنجاح. يمكنك الآن رفع واسترداد نسخة احتياطية.</string>
     <string name="backup_saved_to_server">تم حفظ النسخة الاحتياطية على المخدم</string>
     <string name="backup_received_from_server">تم استعادة النسخة الاحتياطية</string>
+    <string name="backup_data_empty">لا يوجد نسخة احتياطية</string>
     <string name="backup_data_corrupted">البيانات تالفة</string>
     <string name="loading_in_progress">جاري التحميل</string>
     <string name="receive_data_warning_message">سيتم استبدال البيانات الموجودة على جهازك بالنسخة الاحتياطة. هل تريد المتابعة؟</string>

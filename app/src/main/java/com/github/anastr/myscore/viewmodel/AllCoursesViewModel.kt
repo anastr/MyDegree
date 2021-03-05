@@ -1,16 +1,14 @@
 package com.github.anastr.myscore.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.intLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class CoursesViewModelData(val yearId: Long, val semester: Semester)
@@ -35,7 +33,15 @@ class AllCoursesViewModel @Inject constructor(
         data.value = newData
     }
 
-    suspend fun insertCourses(vararg courses: Course) = courseRepository.insertCourses(*courses)
+    fun insertCourses(vararg courses: Course) {
+        viewModelScope.launch {
+            courseRepository.insertCourses(*courses)
+        }
+    }
 
-    suspend fun deleteCourse(course: Course) = courseRepository.deleteCourse(course)
+    fun deleteCourse(course: Course) {
+        viewModelScope.launch {
+            courseRepository.deleteCourse(course)
+        }
+    }
 }

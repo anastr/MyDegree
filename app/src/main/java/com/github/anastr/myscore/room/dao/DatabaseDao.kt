@@ -13,7 +13,7 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg data: Course)
 
-    @Query("SELECT * FROM year")
+    @Query("SELECT * FROM year ORDER BY year_order ASC")
     suspend fun getAllYears(): List<Year>
 
     @Query("SELECT * FROM course")
@@ -23,7 +23,13 @@ interface DatabaseDao {
     suspend fun deleteYear(year: Year) {
         deleteYear(year.uid)
         deleteSubjects(year.uid)
+        val years = getAllYears()
+        years.forEachIndexed { index, y -> y.order = index }
+        updateAll(*years.toTypedArray())
     }
+
+    @Update
+    suspend fun updateAll(vararg years: Year)
 
     @Query("DELETE FROM year WHERE uid = :yearId")
     suspend fun deleteYear(yearId: Long)

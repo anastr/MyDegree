@@ -9,7 +9,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -28,11 +27,6 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_year_list.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -62,7 +56,7 @@ class YearListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        yearAdapter = YearAdapter(ArrayList())
+        yearAdapter = YearAdapter()
         val itemTouchHelper = ItemTouchHelper(DragItemTouchHelper(yearAdapter))
         val swipeTouchHelper = ItemTouchHelper(SwipeItemTouchHelper(yearAdapter))
         view.findViewById<RecyclerView>(R.id.recycler_view).apply {
@@ -73,11 +67,9 @@ class YearListFragment : Fragment() {
         }
 
         yearViewModel.years.toFlowable(viewLifecycleOwner)
-            .subscribe {
-                val oldList = yearAdapter.yearsList
-                yearAdapter.updateData(it)
-                val newList = yearAdapter.yearsList
-                val diff = DiffUtil.calculateDiff(YearsDiffUtil(oldList, newList))
+            .subscribe { newList ->
+                val diff = DiffUtil.calculateDiff(YearsDiffUtil(yearAdapter.years, newList))
+                yearAdapter.updateData(newList)
                 diff.dispatchUpdatesTo(yearAdapter)
                 progressBar.visibility = View.GONE
                 if (newList.isEmpty())
@@ -103,10 +95,11 @@ class YearListFragment : Fragment() {
         Navigation.findNavController(requireView()).navigate(action)
     }
 
-    inner class YearAdapter(private val years: ArrayList<YearWithSemester>) :
+    inner class YearAdapter :
         RecyclerView.Adapter<YearAdapter.YearViewHolder>(), DragTouchHelper, SwipeTouchHelper {
 
-        val yearsList get() = years.toList()
+        private val _years = arrayListOf<YearWithSemester>()
+        val years: List<YearWithSemester> = _years
 
         inner class YearViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val yearTextView: TextView = itemView.findViewById(R.id.text_year_name)
@@ -120,14 +113,14 @@ class YearListFragment : Fragment() {
                 semester1Button.rapidClickListener {
                     navigateToDegrees(
                         yearPosition = adapterPosition,
-                        yearId = years[adapterPosition].uid,
+                        yearId = _years[adapterPosition].uid,
                         semester = Semester.FirstSemester,
                     )
                 }
                 semester2Button.rapidClickListener {
                     navigateToDegrees(
                         yearPosition = adapterPosition,
-                        yearId = years[adapterPosition].uid,
+                        yearId = _years[adapterPosition].uid,
                         semester = Semester.SecondSemester,
                     )
                 }
@@ -141,9 +134,9 @@ class YearListFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: YearViewHolder, position: Int) {
-            val yearItem = years[position]
+            val yearItem = _years[position]
 
-            holder.yearTextView.setText(yearsRec[position])
+            holder.yearTextView.setText(yearsRec[yearItem.order])
 
             holder.semester1ScoreTextView.text = yearItem.semester1Score.formattedScore()
             holder.semester2ScoreTextView.text = yearItem.semester2Score.formattedScore()
@@ -153,30 +146,21 @@ class YearListFragment : Fragment() {
         }
 
         fun updateData(newData: List<YearWithSemester>) {
-            years.clear()
-            years.addAll(newData)
+            _years.clear()
+            _years.addAll(newData)
 //            notifyDataSetChanged()
         }
 
-        override fun getItemCount(): Int = years.size
+        override fun getItemCount(): Int = _years.size
 
         override fun onItemDrag(fromPosition: Int, toPosition: Int) {
-            years.swap(fromPosition, toPosition)
+            _years.swap(fromPosition, toPosition)
             Log.i("adapter", "drag from $fromPosition to $toPosition")
             notifyItemMoved(fromPosition, toPosition)
         }
 
         override fun onItemMoved() {
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    years.forEachIndexed { index, year ->
-                        year.order = index
-                    }
-                    yearViewModel.updateYears(*years.map { Year(it.uid, it.order) }.toTypedArray())
-                }
-                // to update year name
-                notifyItemRangeChanged(0, years.size)
-            }
+            yearViewModel.updateYears(*_years.mapIndexed { index, item -> Year(uid = item.uid, order = index) }.toTypedArray())
         }
 
         override fun onItemSwiped(position: Int) {
@@ -186,9 +170,7 @@ class YearListFragment : Fragment() {
                     dialog.dismiss()
                 }
                 .setPositiveButton(R.string.delete) { dialog, _ ->
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        yearViewModel.deleteYear(years[position].let { Year(uid = it.uid, order = it.order) })
-                    }
+                    yearViewModel.deleteYear(_years[position].let { Year(uid = it.uid, order = it.order) })
                     dialog.dismiss()
                 }
                 .show()

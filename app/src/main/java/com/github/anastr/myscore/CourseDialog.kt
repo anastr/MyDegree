@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
@@ -18,9 +17,6 @@ import com.github.anastr.myscore.viewmodel.CourseViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.Serializable
 
 sealed class CourseMode: Serializable {
@@ -100,16 +96,19 @@ class CourseDialog: DialogFragment() {
             }
         }
 
-        courseViewModel.course.observe(this) {
-            it?.let {
-                course = it
-                nameEditText.setText(it.name)
-                if (it.theoreticalScore != 0)
-                    theoreticalTextInput.editText?.setText(it.theoreticalScore.toString())
-                if (it.practicalScore != 0)
-                    practicalTextInput.editText?.setText(it.practicalScore.toString())
-                theoreticalCheckBox.isChecked = it.hasTheoretical
-                practicalCheckBox.isChecked = it.hasPractical
+        courseViewModel.course.observe(this) { course ->
+            if (course != null) {
+                this.course = course
+                nameEditText.setText(course.name)
+                if (course.theoreticalScore != 0)
+                    theoreticalTextInput.editText?.setText(course.theoreticalScore.toString())
+                if (course.practicalScore != 0)
+                    practicalTextInput.editText?.setText(course.practicalScore.toString())
+                theoreticalCheckBox.isChecked = course.hasTheoretical
+                practicalCheckBox.isChecked = course.hasPractical
+            }
+            else {
+                dismiss()
             }
         }
     }
@@ -121,18 +120,12 @@ class CourseDialog: DialogFragment() {
                 dialog.dismiss()
             }
             .setPositiveButton(R.string.delete) { dialog, _ ->
-                lifecycleScope.launch {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            courseViewModel.deleteCourse(course)
-                        }
-                        dialog.dismiss()
-                        dismiss()
-                    }
-                    catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
-                    }
+                try {
+                    courseViewModel.deleteCourse(course)
+                    dialog.dismiss()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
                 }
             }
             .show()
@@ -140,22 +133,19 @@ class CourseDialog: DialogFragment() {
 
     private fun save() {
         if (validate()) try {
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    course.apply {
-                        name = inputName
-                        hasTheoretical = theoreticalCheckBox.isChecked
-                        hasPractical = practicalCheckBox.isChecked
-                        theoreticalScore = inputTheoreticalDegree
-                        practicalScore = inputPracticalDegree
-                    }
-                    when (args.courseMode) {
-                        is CourseMode.New -> courseViewModel.insertCourse(course)
-                        is CourseMode.Edit -> courseViewModel.updateCourse(course)
-                    }
-                }
-                dismiss()
+            course.apply {
+                name = inputName
+                hasTheoretical = theoreticalCheckBox.isChecked
+                hasPractical = practicalCheckBox.isChecked
+                theoreticalScore = inputTheoreticalDegree
+                practicalScore = inputPracticalDegree
             }
+            when (args.courseMode) {
+                is CourseMode.New -> courseViewModel.insertCourse(course)
+                is CourseMode.Edit -> courseViewModel.updateCourse(course)
+            }
+            dismiss()
+
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()

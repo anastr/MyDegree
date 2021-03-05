@@ -17,6 +17,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ object AppModule {
                             Year(order = 0),
                             Year(order = 1),
                             Year(order = 2),
-                            Year(order = 3)
+                            Year(order = 3),
                         )
                     }
                 }
@@ -67,5 +68,9 @@ object AppModule {
     @Provides
     fun provideSharedPreferences(application: Application): SharedPreferences
             = PreferenceManager.getDefaultSharedPreferences(application)
+
+    @Provides
+    fun provideDefaultDispatcher(): CoroutineDispatcher
+            = Dispatchers.IO
 
 }

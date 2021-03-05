@@ -9,18 +9,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.github.anastr.myscore.firebase.documents.DegreeDocument
-import com.github.anastr.myscore.firebase.toCourse
-import com.github.anastr.myscore.firebase.toHashMap
-import com.github.anastr.myscore.firebase.toYear
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.util.*
+import com.github.anastr.myscore.viewmodel.ErrorCode
+import com.github.anastr.myscore.viewmodel.FirebaseState
 import com.github.anastr.myscore.viewmodel.YearViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -29,16 +26,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.Source
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
@@ -86,10 +76,8 @@ class MainActivity : AppCompatActivity(),
 
         fab.rapidClickListener {
             if (currentYearId == -1L) {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    if (yearsCount < MAX_YEARS)
-                        yearViewModel.insertYears(Year(order = yearsCount))
-                }
+                if (yearsCount < MAX_YEARS)
+                    yearViewModel.insertYears(Year(order = yearsCount))
             }
             else {
                 val action = CourseListFragmentDirections.actionCourseListFragmentToCourseDialog(
@@ -115,6 +103,52 @@ class MainActivity : AppCompatActivity(),
         navController.addOnDestinationChangedListener(
             this@MainActivity
         )
+
+        yearViewModel.firebaseState.observe(this) { state ->
+            when (state) {
+                FirebaseState.Loading -> showProgress()
+                is FirebaseState.GoogleLoginSucceeded -> {
+                    hideProgress()
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(
+                            String.format(
+                                getString(R.string.firebase_signin_succeeded),
+                                state.user.displayName
+                            )
+                        )
+                        .setPositiveButton(R.string.ok) { _, _ -> }
+                        .show()
+                }
+                is FirebaseState.Error -> {
+                    hideProgress()
+                    val message = when (state.errorCode) {
+                        ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
+                        ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
+                    }
+                    Snackbar.make(fab, message, Snackbar.LENGTH_SHORT).show()
+                }
+                is FirebaseState.FirestoreError -> {
+                    hideProgress()
+                    manageFirebaseError(state.exception)
+                }
+                FirebaseState.SendBackupSucceeded -> {
+                    hideProgress()
+                    MaterialAlertDialogBuilder(this@MainActivity)
+                        .setMessage(R.string.backup_saved_to_server)
+                        .setPositiveButton(R.string.ok) { _, _ -> }
+                        .show()
+                }
+                FirebaseState.ReceiveBackupSucceeded -> {
+                    hideProgress()
+                    navController.popBackStack(R.id.year_page_fragment, false)
+                    Snackbar.make(
+                        fab,
+                        getString(R.string.backup_received_from_server),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     override fun onDestinationChanged(
@@ -186,7 +220,7 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(R.string.send_backup_warning_message)
-                        .setPositiveButton(R.string._continue) { _, _ -> sendBackup() }
+                        .setPositiveButton(R.string._continue) { _, _ -> yearViewModel.sendBackup() }
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .show()
                 }
@@ -206,7 +240,7 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(R.string.receive_data_warning_message)
-                        .setPositiveButton(R.string.receive) { _, _ -> receiveBackup() }
+                        .setPositiveButton(R.string.receive) { _, _ -> yearViewModel.receiveBackup() }
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .show()
                 }
@@ -221,78 +255,6 @@ class MainActivity : AppCompatActivity(),
                 }
                 NavigationUI.onNavDestinationSelected(item, navController)
             }
-        }
-    }
-
-    private fun sendBackup() {
-        showProgress()
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = Firebase.firestore
-            val years = yearViewModel.getYears()
-            val courses = yearViewModel.getCourses()
-            val degreeDocument = DegreeDocument().apply {
-                this.years = years.map { it.toHashMap() }
-                this.courses = courses.map { it.toHashMap() }
-            }
-            val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-            db.runTransaction { transaction ->
-                transaction.set(docRef, degreeDocument)
-            }
-                .addOnSuccessListener {
-                    hideProgress()
-                    MaterialAlertDialogBuilder(this@MainActivity)
-                        .setMessage(R.string.backup_saved_to_server)
-                        .setPositiveButton(R.string.ok) { _, _ -> }
-                        .show()
-                }
-                .addOnFailureListener { e ->
-                    hideProgress()
-                    manageFirebaseError(e)
-                }
-        }
-    }
-
-    private fun receiveBackup() {
-        showProgress()
-        val db = Firebase.firestore
-        val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-        docRef.get(Source.SERVER).addOnSuccessListener { documentSnapshot ->
-            try {
-                val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
-                saveDataFromFireStore(degreeDocument!!)
-            }
-            catch (e: Exception) {
-                hideProgress()
-                e.printStackTrace()
-                Snackbar.make(fab, getString(R.string.backup_data_corrupted), Snackbar.LENGTH_SHORT).show()
-            }
-        }
-            .addOnFailureListener { e ->
-                hideProgress()
-                manageFirebaseError(e)
-            }
-    }
-
-    private fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
-        lifecycleScope.launch {
-            navController.popBackStack(R.id.year_page_fragment, false)
-            withContext(Dispatchers.IO) {
-                yearViewModel.deleteAll()
-                if (degreeDocument.years != null) {
-                    val years = degreeDocument.years!!.map { it.toYear() }
-                    yearViewModel.insertYears(*years.toTypedArray())
-                }
-                if (degreeDocument.courses != null) {
-                    val courses = degreeDocument.courses!!.map { it.toCourse() }
-                    yearViewModel.insertCourses(*courses.toTypedArray())
-                }
-            }
-            hideProgress()
-            Snackbar.make(
-                fab,
-                getString(R.string.backup_received_from_server),
-                Snackbar.LENGTH_SHORT
-            ).show()
         }
     }
 
@@ -315,34 +277,11 @@ class MainActivity : AppCompatActivity(),
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account.idToken!!)
+                yearViewModel.firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 Snackbar.make(fab, getString(R.string.google_signin_failed), Snackbar.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        showProgress()
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnSuccessListener {
-                hideProgress()
-                val user = auth.currentUser
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(
-                        String.format(
-                            getString(R.string.firebase_signin_succeeded),
-                            user?.displayName
-                        )
-                    )
-                    .setPositiveButton(R.string.ok) { _, _ -> }
-                    .show()
-            }
-            .addOnFailureListener { e ->
-                hideProgress()
-                manageFirebaseError(e)
-            }
     }
 
     private fun manageFirebaseError(e: Exception) {

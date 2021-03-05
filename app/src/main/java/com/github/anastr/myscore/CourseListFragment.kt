@@ -76,13 +76,13 @@ class CourseListFragment : Fragment() {
             courseAdapter.notifyDataSetChanged()
         }
         allCoursesViewModel.courses.toFlowable(this)
-            .subscribe {
-                if (it.size >= MAX_COURSES)
+            .subscribe { list ->
+                if (list.size >= MAX_COURSES)
                     fab.hideFab()
                 else
                     fab.showFab()
                 val oldList = courseAdapter.coursesList
-                courseAdapter.updateData(it)
+                courseAdapter.updateData(list)
                 val newList = courseAdapter.coursesList
                 val diff = DiffUtil.calculateDiff(CoursesDiffUtil(oldList, newList))
                 diff.dispatchUpdatesTo(courseAdapter)

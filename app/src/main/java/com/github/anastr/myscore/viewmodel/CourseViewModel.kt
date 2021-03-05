@@ -1,13 +1,11 @@
 package com.github.anastr.myscore.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,9 +37,21 @@ class CourseViewModel @Inject constructor(
         data.value = courseMode
     }
 
-    suspend fun insertCourse(course: Course) = courseRepository.insertCourses(course)
+    fun insertCourse(course: Course) {
+        viewModelScope.launch {
+            courseRepository.insertCourses(course)
+        }
+    }
 
-    suspend fun updateCourse(course: Course) = courseRepository.updateCourse(course)
+    fun updateCourse(course: Course) {
+        viewModelScope.launch {
+            courseRepository.updateCourse(course)
+        }
+    }
 
-    suspend fun deleteCourse(course: Course) = courseRepository.deleteCourse(course)
+    fun deleteCourse(course: Course) {
+        viewModelScope.launch {
+            courseRepository.deleteCourse(course)
+        }
+    }
 }
