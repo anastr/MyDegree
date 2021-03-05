@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.room.view.YearWithSemester
@@ -26,13 +27,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_year_list.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
 class YearListFragment : Fragment() {
+
+    private var _binding: FragmentYearListBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var yearAdapter: YearAdapter
 
@@ -48,9 +51,9 @@ class YearListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_year_list, container, false)
+    ): View {
+        _binding = FragmentYearListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,11 +74,11 @@ class YearListFragment : Fragment() {
                 val diff = DiffUtil.calculateDiff(YearsDiffUtil(yearAdapter.years, newList))
                 yearAdapter.updateData(newList)
                 diff.dispatchUpdatesTo(yearAdapter)
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 if (newList.isEmpty())
-                    textNoData.visibility = View.VISIBLE
+                    binding.textNoData.visibility = View.VISIBLE
                 else
-                    textNoData.visibility = View.GONE
+                    binding.textNoData.visibility = View.GONE
             }
             .disposeOnDestroy(viewLifecycleOwner)
     }
@@ -177,5 +180,10 @@ class YearListFragment : Fragment() {
             notifyItemChanged(position)
         }
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

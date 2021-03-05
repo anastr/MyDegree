@@ -3,19 +3,16 @@ package com.github.anastr.myscore
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.github.anastr.myscore.databinding.DialogCourseBinding
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
 
@@ -27,24 +24,20 @@ sealed class CourseMode: Serializable {
 @AndroidEntryPoint
 class CourseDialog: DialogFragment() {
 
+    private lateinit var binding: DialogCourseBinding
+
     private val args: CourseDialogArgs by navArgs()
 
     private val courseViewModel: CourseViewModel by viewModels()
 
-    private lateinit var nameEditText: EditText
-    private lateinit var theoreticalTextInput: TextInputLayout
-    private lateinit var theoreticalCheckBox: CheckBox
-    private lateinit var practicalTextInput: TextInputLayout
-    private lateinit var practicalCheckBox: CheckBox
-
     private lateinit var course: Course
 
     private val inputName: String
-        get() = nameEditText.text.toString().trim()
+        get() = binding.nameEditText.text.toString().trim()
     private val inputTheoreticalDegree: Int
-        get() = if (theoreticalCheckBox.isChecked) theoreticalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
+        get() = if (binding.theoreticalCheckBox.isChecked) binding.theoreticalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
     private val inputPracticalDegree: Int
-        get() = if (practicalCheckBox.isChecked) practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
+        get() = if (binding.practicalCheckBox.isChecked) binding.practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +47,10 @@ class CourseDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             val builder = MaterialAlertDialogBuilder(it)
-            val view = requireActivity().layoutInflater.inflate(R.layout.dialog_course, null)
+            binding = DialogCourseBinding.inflate(requireActivity().layoutInflater)
+            val view = binding.root
 
-            initUi(view!!)
+            initUi()
 
             builder.apply {
                 setView(view)
@@ -71,23 +65,18 @@ class CourseDialog: DialogFragment() {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    private fun initUi(view: View) {
-        nameEditText = view.findViewById(R.id.et_name)
-        theoreticalTextInput = view.findViewById(R.id.ti_theoretical)
-        theoreticalCheckBox = view.findViewById(R.id.cb_theoretical)
-        practicalTextInput = view.findViewById(R.id.ti_practical)
-        practicalCheckBox = view.findViewById(R.id.cb_practical)
+    private fun initUi() {
 
-        theoreticalCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            theoreticalTextInput.isEnabled = isChecked
+        binding.theoreticalCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            binding.theoreticalTextInput.isEnabled = isChecked
         }
-        practicalCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            practicalTextInput.isEnabled = isChecked
+        binding.practicalCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            binding.practicalTextInput.isEnabled = isChecked
         }
 
-        view.findViewById<Button>(R.id.button_cancel).rapidClickListener { dismiss() }
-        view.findViewById<Button>(R.id.button_save).rapidClickListener { save() }
-        view.findViewById<Button>(R.id.button_delete).apply {
+        binding.buttonCancel.rapidClickListener { dismiss() }
+        binding.buttonSave.rapidClickListener { save() }
+        binding.buttonDelete.apply {
             visibility = if (args.courseMode is CourseMode.Edit) {
                 rapidClickListener { delete() }
                 View.VISIBLE
@@ -99,13 +88,13 @@ class CourseDialog: DialogFragment() {
         courseViewModel.course.observe(this) { course ->
             if (course != null) {
                 this.course = course
-                nameEditText.setText(course.name)
+                binding.nameEditText.setText(course.name)
                 if (course.theoreticalScore != 0)
-                    theoreticalTextInput.editText?.setText(course.theoreticalScore.toString())
+                    binding.theoreticalTextInput.editText?.setText(course.theoreticalScore.toString())
                 if (course.practicalScore != 0)
-                    practicalTextInput.editText?.setText(course.practicalScore.toString())
-                theoreticalCheckBox.isChecked = course.hasTheoretical
-                practicalCheckBox.isChecked = course.hasPractical
+                    binding.practicalTextInput.editText?.setText(course.practicalScore.toString())
+                binding.theoreticalCheckBox.isChecked = course.hasTheoretical
+                binding.practicalCheckBox.isChecked = course.hasPractical
             }
             else {
                 dismiss()
@@ -135,8 +124,8 @@ class CourseDialog: DialogFragment() {
         if (validate()) try {
             course.apply {
                 name = inputName
-                hasTheoretical = theoreticalCheckBox.isChecked
-                hasPractical = practicalCheckBox.isChecked
+                hasTheoretical = binding.theoreticalCheckBox.isChecked
+                hasPractical = binding.practicalCheckBox.isChecked
                 theoreticalScore = inputTheoreticalDegree
                 practicalScore = inputPracticalDegree
             }
@@ -155,10 +144,10 @@ class CourseDialog: DialogFragment() {
     private fun validate(): Boolean {
         return when {
             inputName.isEmpty() -> {
-                nameEditText.error = getString(R.string.this_field_required)
+                binding.nameEditText.error = getString(R.string.this_field_required)
                 false
             }
-            !theoreticalCheckBox.isChecked && !practicalCheckBox.isChecked -> {
+            !binding.theoreticalCheckBox.isChecked && !binding.practicalCheckBox.isChecked -> {
                 Toast.makeText(activity, getString(R.string.one_degree_is_required), Toast.LENGTH_SHORT).show()
                 false
             }

@@ -7,7 +7,6 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.rxjava3.processors.PublishProcessor
-import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.TimeUnit
 
 typealias ClickListener = () -> Unit

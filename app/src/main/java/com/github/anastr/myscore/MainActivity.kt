@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.util.*
@@ -27,12 +28,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
     NavController.OnDestinationChangedListener {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var yearsCount = 0
 
@@ -54,8 +55,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         hideProgress()
 
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity(),
             manageFabVisibility()
         }
 
-        fab.rapidClickListener {
+        binding.content.fab.rapidClickListener {
             if (currentYearId == -1L) {
                 if (yearsCount < MAX_YEARS)
                     yearViewModel.insertYears(Year(order = yearsCount))
@@ -90,8 +92,8 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        NavigationUI.setupWithNavController(toolbar, navController)
-        bottom_navigation.setOnNavigationItemSelectedListener { item ->
+        NavigationUI.setupWithNavController(binding.toolbar, navController)
+        binding.content.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             currentNavigationFragment?.apply {
                 exitTransition = MaterialFadeThrough().apply {
                     duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
@@ -125,7 +127,7 @@ class MainActivity : AppCompatActivity(),
                         ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
                         ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
                     }
-                    Snackbar.make(fab, message, Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.content.fab, message, Snackbar.LENGTH_SHORT).show()
                 }
                 is FirebaseState.FirestoreError -> {
                     hideProgress()
@@ -142,7 +144,7 @@ class MainActivity : AppCompatActivity(),
                     hideProgress()
                     navController.popBackStack(R.id.year_page_fragment, false)
                     Snackbar.make(
-                        fab,
+                        binding.content.fab,
                         getString(R.string.backup_received_from_server),
                         Snackbar.LENGTH_SHORT
                     ).show()
@@ -158,25 +160,25 @@ class MainActivity : AppCompatActivity(),
     ) {
         when (destination.id) {
             R.id.settingsFragment -> {
-                motion_layout.transitionToEnd()
-                fab.hideFab()
+                binding.content.motionLayout.transitionToEnd()
+                binding.content.fab.hideFab()
             }
             R.id.aboutFragment -> {
-                motion_layout.transitionToEnd()
-                fab.hideFab()
+                binding.content.motionLayout.transitionToEnd()
+                binding.content.fab.hideFab()
             }
             R.id.year_page_fragment -> {
-                motion_layout.transitionToStart()
+                binding.content.motionLayout.transitionToStart()
                 manageFabVisibility()
                 currentYearId = -1L
             }
             R.id.chart_page_fragment -> {
-                motion_layout.transitionToStart()
-                fab.hideFab()
+                binding.content.motionLayout.transitionToStart()
+                binding.content.fab.hideFab()
                 currentYearId = -1L
             }
             R.id.courseListFragment -> {
-                motion_layout.transitionToEnd()
+                binding.content.motionLayout.transitionToEnd()
                 if (arguments == null) {
                     currentYearId = -1L
                 } else {
@@ -193,9 +195,9 @@ class MainActivity : AppCompatActivity(),
     private fun manageFabVisibility() {
         if (navController.currentDestination?.id == R.id.year_page_fragment) {
             if (yearsCount >= MAX_YEARS)
-                fab.hideFab()
+                binding.content.fab.hideFab()
             else
-                fab.showFab()
+                binding.content.fab.showFab()
         }
     }
 
@@ -279,7 +281,7 @@ class MainActivity : AppCompatActivity(),
                 val account = task.getResult(ApiException::class.java)!!
                 yearViewModel.firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                Snackbar.make(fab, getString(R.string.google_signin_failed), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.content.fab, getString(R.string.google_signin_failed), Snackbar.LENGTH_SHORT).show()
             }
         }
     }
@@ -290,17 +292,17 @@ class MainActivity : AppCompatActivity(),
 //            getString(R.string.message_need_vpn)
 //        else
 //            getString(R.string.message_failed_connect)
-        Snackbar.make(fab, getString(R.string.message_need_vpn), Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.content.fab, getString(R.string.message_need_vpn), Snackbar.LENGTH_SHORT).show()
     }
 
     private fun showProgress() {
         loading = true
-        progress.show()
+        binding.progress.show()
     }
 
     private fun hideProgress() {
         loading = false
-        progress.hide()
+        binding.progress.hide()
     }
 
     companion object {

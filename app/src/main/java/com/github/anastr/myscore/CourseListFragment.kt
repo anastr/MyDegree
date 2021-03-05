@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.AllCoursesViewModel
@@ -20,12 +21,14 @@ import com.github.anastr.myscore.viewmodel.CoursesViewModelData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_course_list.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CourseListFragment : Fragment() {
+
+    private var _binding: FragmentCourseListBinding? = null
+    private val binding get() =_binding!!
 
     private val args: CourseListFragmentArgs by navArgs()
 
@@ -50,8 +53,9 @@ class CourseListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_course_list, container, false)
+    ): View {
+        _binding = FragmentCourseListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,7 +68,7 @@ class CourseListFragment : Fragment() {
                 args.semester.position+1,
             )
 
-        recycler_view.apply {
+        binding.recyclerView.apply {
             setHasFixedSize(true)
             adapter = courseAdapter
         }
@@ -86,11 +90,11 @@ class CourseListFragment : Fragment() {
                 val newList = courseAdapter.coursesList
                 val diff = DiffUtil.calculateDiff(CoursesDiffUtil(oldList, newList))
                 diff.dispatchUpdatesTo(courseAdapter)
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 if (newList.isEmpty())
-                    textNoData.visibility = View.VISIBLE
+                    binding.textNoData.visibility = View.VISIBLE
                 else
-                    textNoData.visibility = View.GONE
+                    binding.textNoData.visibility = View.GONE
             }
             .disposeOnDestroy(this)
     }
@@ -157,4 +161,10 @@ class CourseListFragment : Fragment() {
         override fun getItemCount(): Int = courses.size
 
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }
