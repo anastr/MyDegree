@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="action_settings">الاعدادات</string>
+    <string name="action_about">حول</string>
+
+    <string name="year_1">السنة الأولى</string>
+    <string name="year_2">السنة الثانية</string>
+    <string name="year_3">السنة الثالثة</string>
+    <string name="year_4">السنة الرابعة</string>
+    <string name="year_5">السنة الخامسة</string>
+    <string name="year_6">السنة السادسة</string>
+
+    <string name="years">السنوات</string>
+    <string name="chart">المخطط</string>
+    <string name="semester_1">الفصل الأول</string>
+    <string name="semester_2">الفصل الثاني</string>
+    <string name="delete_year_message">ستفقد جميع بيانات المواد المسجلة في هذه السنة، هل تريد الحذف؟</string>
+
+    <string name="_new">جديد</string>
+    <string name="edit">تعديل</string>
+    <string name="ok">موافق</string>
+    <string name="save">حفظ</string>
+    <string name="delete">حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="receive">استرداد</string>
+    <string name="_continue" >تابع</string>
+
+    <string name="this_field_required">هذا الحقل مطلوب</string>
+    <string name="one_degree_is_required">يجب ادخال علامة النظري أو العملي على الأقل</string>
+    <string name="degree_should_be_smaller_than_100">لا يمكن أن تكون العلامة أعلى من 100</string>
+
+
+    <string name="noData">لا يوجد بيانات</string>
+    <string name="theoretical">نظري: %d</string>
+    <string name="practical">عملي: %d</string>
+    <string name="total">المجموع: </string>
+
+    <string name="course_name">اسم المقرر</string>
+    <string name="theoretical_mark">علامة النظري</string>
+    <string name="practical_mark">علامة العملي</string>
+
+    <string name="title_courses">سنة(%d) فصل(%d)</string>
+    <string name="title_settings">الاعدادات</string>
+    <string name="title_about">حول</string>
+    <string name="title_chart">الاحصائيات</string>
+
+    <string name="the_degree">المعدل</string>
+
+    <!-- General Preferences -->
+    <string name="general_header">عام</string>
+    <string name="pass_degree">علامة النجاح</string>
+    <string name="theme">Theme</string>
+    <string-array name="themes">
+        <item>بحسب اعدادات النظام</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <!-- About -->
+    <string name="send_backup">رفع نسخة اتياطية</string>
+    <string name="receive_backup">استرداد نسخة احتياطية</string>
+
+    <!-- Messages -->
+    <string name="message_need_vpn">فشل الاتصال بالمخدم، قد تحتاج إلى VPN</string>
+    <string name="message_failed_connect">فشل الاتصال بالمخدم</string>
+    <string name="google_signin_failed">فشل تسجيل الدخول بحساب Google</string>
+    <string name="firebase_signin_succeeded">مرحباً %s، تم تسجيل الدخول بنجاح. يمكنك الآن رفع واسترداد نسخة احتياطية.</string>
+    <string name="backup_saved_to_server">تم حفظ النسخة الاحتياطية على المخدم</string>
+    <string name="backup_received_from_server">تم استعادة النسخة الاحتياطية</string>
+    <string name="backup_data_empty">لا يوجد نسخة احتياطية</string>
+    <string name="backup_data_corrupted">البيانات تالفة</string>
+    <string name="loading_in_progress">جاري التحميل</string>
+    <string name="receive_data_warning_message">سيتم استبدال البيانات الموجودة على جهازك بالنسخة الاحتياطة. هل تريد المتابعة؟</string>
+    <string name="send_backup_warning_message">سيتم فقد النسخ الاحتياطية السابقة واستبدالهة بالبيانات الحالية، هل تريد المتابعة؟</string>
+
+</resources>

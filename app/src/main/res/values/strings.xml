@@ -1,84 +1,84 @@
 <resources>
-    <string name="app_name">My degree</string>
+    <string name="app_name" translatable="false">My degree</string>
 
-    <string name="action_settings">الاعدادات</string>
-    <string name="action_about">حول</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
 
-    <string name="year_1">السنة الأولى</string>
-    <string name="year_2">السنة الثانية</string>
-    <string name="year_3">السنة الثالثة</string>
-    <string name="year_4">السنة الرابعة</string>
-    <string name="year_5">السنة الخامسة</string>
-    <string name="year_6">السنة السادسة</string>
+    <string name="year_1">First year</string>
+    <string name="year_2">Second year</string>
+    <string name="year_3">Third year</string>
+    <string name="year_4">Fourth year</string>
+    <string name="year_5">Fifth year</string>
+    <string name="year_6">Sixth year</string>
 
-    <string name="years">السنوات</string>
-    <string name="chart">المخطط</string>
-    <string name="semester_1">الفصل الأول</string>
-    <string name="semester_2">الفصل الثاني</string>
-    <string name="delete_year_message">ستفقد جميع بيانات المواد المسجلة في هذه السنة، هل تريد الحذف؟</string>
+    <string name="years">Years</string>
+    <string name="chart">Chart</string>
+    <string name="semester_1">First semester</string>
+    <string name="semester_2">Second semester</string>
+    <string name="delete_year_message">You will lose all the data stored in this year, delete?</string>
 
-    <string name="_new">جديد</string>
-    <string name="edit">تعديل</string>
-    <string name="ok">موافق</string>
-    <string name="save">حفظ</string>
-    <string name="delete">حذف</string>
-    <string name="cancel">إلغاء</string>
-    <string name="receive">استرداد</string>
-    <string name="_continue" >تابع</string>
+    <string name="_new">New</string>
+    <string name="edit">Edit</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="receive">Receive</string>
+    <string name="_continue" >Continue</string>
 
-    <string name="this_field_required">هذا الحقل مطلوب</string>
-    <string name="one_degree_is_required">يجب ادخال علامة النظري أو العملي على الأقل</string>
-    <string name="degree_should_be_smaller_than_100">لا يمكن أن تكون العلامة أعلى من 100</string>
+    <string name="this_field_required">This field is required.</string>
+    <string name="one_degree_is_required">You must enter theoretical or practical degree at least.</string>
+    <string name="degree_should_be_smaller_than_100">Degree should not be more than 100.</string>
 
 
-    <string name="noData">لا يوجد بيانات</string>
-    <string name="theoretical">نظري: %d</string>
-    <string name="practical">عملي: %d</string>
-    <string name="total">المجموع: </string>
+    <string name="noData">No data</string>
+    <string name="theoretical">Theoretical: %d</string>
+    <string name="practical">Practical: %d</string>
+    <string name="total">Total: </string>
 
-    <string name="course_name">اسم المقرر</string>
-    <string name="theoretical_mark">علامة النظري</string>
-    <string name="practical_mark">علامة العملي</string>
+    <string name="course_name">Course name</string>
+    <string name="theoretical_mark">Theoretical degree</string>
+    <string name="practical_mark">Practical degree</string>
 
-    <string name="title_courses">سنة(%d) فصل(%d)</string>
-    <string name="title_settings">الاعدادات</string>
-    <string name="title_about">حول</string>
-    <string name="title_chart">الاحصائيات</string>
+    <string name="title_courses">Year(%d) semester(%d)</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_about">About</string>
+    <string name="title_chart">Chart</string>
 
-    <string name="the_degree">المعدل</string>
+    <string name="the_degree">Degree</string>
 
     <!-- General Preferences -->
-    <string name="general_header">عام</string>
-    <string name="pass_degree">علامة النجاح</string>
+    <string name="general_header">General</string>
+    <string name="pass_degree">Pass degree</string>
     <string name="theme">Theme</string>
     <string-array name="themes">
-        <item>بحسب اعدادات النظام</item>
-        <item>Light theme</item>
-        <item>Dark theme</item>
+        <item>Follow system</item>
+        <item>Light</item>
+        <item>Dark</item>
     </string-array>
-    <string-array name="themes_values">
+    <string-array name="themes_values" translatable="false">
         <item>-1</item>
         <item>1</item>
         <item>2</item>
     </string-array>
 
     <!-- About -->
-    <string name="anas_altair">Anas Altair</string>
-    <string name="developer_on_linkedin">Developer on Linkedin</string>
-    <string name="send_backup">رفع نسخة اتياطية</string>
-    <string name="receive_backup">استرداد نسخة احتياطية</string>
+    <string name="anas_altair" translatable="false">Anas Altair</string>
+    <string name="developer_on_linkedin" translatable="false">Developer on Linkedin</string>
+    <string name="send_backup">Upload backup</string>
+    <string name="receive_backup">Receive backup</string>
 
     <!-- Messages -->
-    <string name="message_need_vpn">فشل الاتصال بالمخدم، قد تحتاج إلى VPN</string>
-    <string name="message_failed_connect">فشل الاتصال بالمخدم</string>
+    <string name="message_need_vpn">Connection failed, you may need a VPN</string>
+    <string name="message_failed_connect">Connection failed</string>
     <string name="google_signin_failed">Google sign in failed</string>
-    <string name="firebase_signin_succeeded">مرحباً %s، تم تسجيل الدخول بنجاح. يمكنك الآن رفع واسترداد نسخة احتياطية.</string>
-    <string name="backup_saved_to_server">تم حفظ النسخة الاحتياطية على المخدم</string>
-    <string name="backup_received_from_server">تم استعادة النسخة الاحتياطية</string>
-    <string name="backup_data_empty">لا يوجد نسخة احتياطية</string>
-    <string name="backup_data_corrupted">البيانات تالفة</string>
-    <string name="loading_in_progress">جاري التحميل</string>
-    <string name="receive_data_warning_message">سيتم استبدال البيانات الموجودة على جهازك بالنسخة الاحتياطة. هل تريد المتابعة؟</string>
-    <string name="send_backup_warning_message">سيتم فقد النسخ الاحتياطية السابقة واستبدالهة بالبيانات الحالية، هل تريد المتابعة؟</string>
+    <string name="firebase_signin_succeeded">Hello %s, you signed in successfully! you can now upload and receive backup.</string>
+    <string name="backup_saved_to_server">Backup uploaded successfully!</string>
+    <string name="backup_received_from_server">Backup received successfully!</string>
+    <string name="backup_data_empty">There\'s no backups on the server</string>
+    <string name="backup_data_corrupted">Data corrupted</string>
+    <string name="loading_in_progress">Loading</string>
+    <string name="receive_data_warning_message">Your data will be replaced with the backup, do you want to continue?</string>
+    <string name="send_backup_warning_message">Backup will be replaced with the new data, do you want to continue?</string>
 
 </resources>
