@@ -38,7 +38,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
                         "2" -> "Dark"
                         else -> "Follow system"
                     }
-                    putString(FirebaseAnalytics.Param.VALUE, value)
+                    putString(FirebaseAnalytics.Param.ITEM_VARIANT, value)
                 })
                 return@setOnPreferenceChangeListener true
             }
