@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity(),
                         ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
                         ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
                     }
-                    Snackbar.make(binding.content.fab, message, Snackbar.LENGTH_SHORT).show()
+                    showSnackBar(message)
                 }
                 is FirebaseState.FirestoreError -> {
                     hideProgress()
@@ -135,19 +135,12 @@ class MainActivity : AppCompatActivity(),
                 }
                 FirebaseState.SendBackupSucceeded -> {
                     hideProgress()
-                    MaterialAlertDialogBuilder(this@MainActivity)
-                        .setMessage(R.string.backup_saved_to_server)
-                        .setPositiveButton(R.string.ok) { _, _ -> }
-                        .show()
+                    showSnackBar(getString(R.string.backup_saved_to_server), Snackbar.LENGTH_LONG)
                 }
                 FirebaseState.ReceiveBackupSucceeded -> {
                     hideProgress()
                     navController.popBackStack(R.id.year_page_fragment, false)
-                    Snackbar.make(
-                        binding.content.fab,
-                        getString(R.string.backup_received_from_server),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                    showSnackBar(getString(R.string.backup_received_from_server), Snackbar.LENGTH_LONG)
                 }
             }
         }
@@ -281,7 +274,7 @@ class MainActivity : AppCompatActivity(),
                 val account = task.getResult(ApiException::class.java)!!
                 yearViewModel.firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                Snackbar.make(binding.content.fab, getString(R.string.google_signin_failed), Snackbar.LENGTH_SHORT).show()
+                showSnackBar(getString(R.string.google_signin_failed))
             }
         }
     }
@@ -292,7 +285,7 @@ class MainActivity : AppCompatActivity(),
 //            getString(R.string.message_need_vpn)
 //        else
 //            getString(R.string.message_failed_connect)
-        Snackbar.make(binding.content.fab, getString(R.string.message_need_vpn), Snackbar.LENGTH_SHORT).show()
+        showSnackBar(getString(R.string.message_need_vpn))
     }
 
     private fun showProgress() {
@@ -303,6 +296,10 @@ class MainActivity : AppCompatActivity(),
     private fun hideProgress() {
         loading = false
         binding.progress.hide()
+    }
+
+    private fun showSnackBar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        Snackbar.make(binding.content.fab, message, duration).show()
     }
 
     companion object {
