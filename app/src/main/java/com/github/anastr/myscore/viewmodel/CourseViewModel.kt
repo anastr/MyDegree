@@ -4,24 +4,23 @@ import androidx.lifecycle.*
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class CourseViewModel @Inject constructor(
+class CourseViewModel @AssistedInject constructor(
     private val courseRepository: CourseRepository,
+    @Assisted private val courseMode: CourseMode,
 ): ViewModel() {
 
-    private val data = MutableLiveData<CourseMode>()
-
-    val course: LiveData<Course?> = Transformations.switchMap(data) { mode ->
-        when (mode) {
-            is CourseMode.Edit -> courseRepository.getCourse(mode.courseId)
-            is CourseMode.New -> MutableLiveData<Course?>(
+    val course: LiveData<Course?> =
+        when (courseMode) {
+            is CourseMode.Edit -> courseRepository.getCourse(courseMode.courseId)
+            is CourseMode.New -> MutableLiveData(
                 Course(
-                    yearId = mode.yearId,
-                    semester = mode.semester,
+                    yearId = courseMode.yearId,
+                    semester = courseMode.semester,
                     name = "",
                     hasPractical = true,
                     hasTheoretical = true,
@@ -29,13 +28,7 @@ class CourseViewModel @Inject constructor(
                     practicalScore = 0,
                 )
             )
-            else -> throw IllegalArgumentException("Mode not supported")
         }
-    }
-
-    fun setInput(courseMode: CourseMode) {
-        data.value = courseMode
-    }
 
     fun insertCourse(course: Course) {
         viewModelScope.launch {
@@ -54,4 +47,21 @@ class CourseViewModel @Inject constructor(
             courseRepository.deleteCourse(course)
         }
     }
+
+    companion object {
+        fun provideFactory(
+            courseViewModelFactory: CourseViewModelFactory,
+            courseMode: CourseMode,
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return courseViewModelFactory.create(courseMode) as T
+            }
+        }
+    }
+}
+
+@AssistedFactory
+interface CourseViewModelFactory {
+    fun create(courseMode: CourseMode): CourseViewModel
 }

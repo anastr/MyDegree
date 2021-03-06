@@ -12,12 +12,13 @@ import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.util.*
-import com.github.anastr.myscore.viewmodel.AllCoursesViewModel
-import com.github.anastr.myscore.viewmodel.CoursesViewModelData
+import com.github.anastr.myscore.viewmodel.CoursesViewModel
+import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
@@ -27,7 +28,11 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
 
     private val args: CourseListFragmentArgs by navArgs()
 
-    private val allCoursesViewModel: AllCoursesViewModel by viewModels()
+    @Inject
+    lateinit var coursesViewModelFactory: CoursesViewModelFactory
+    private val coursesViewModel: CoursesViewModel by viewModels {
+        CoursesViewModel.provideFactory(coursesViewModelFactory, args.yearId, args.semester)
+    }
 
     private val courseAdapter = CourseAdapter(this)
 
@@ -66,12 +71,10 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
             adapter = courseAdapter
         }
 
-        allCoursesViewModel.setInput(CoursesViewModelData(args.yearId, args.semester))
-
-        allCoursesViewModel.passDegreeLiveData.observe(viewLifecycleOwner) { passDegree ->
+        coursesViewModel.passDegreeLiveData.observe(viewLifecycleOwner) { passDegree ->
             courseAdapter.passDegree = passDegree
         }
-        allCoursesViewModel.courses.toFlowable(this)
+        coursesViewModel.courses.toFlowable(this)
             .subscribe { list ->
                 if (list.size >= MAX_COURSES)
                     fab.hideFab()

@@ -12,9 +12,11 @@ import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseViewModel
+import com.github.anastr.myscore.viewmodel.CourseViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
+import javax.inject.Inject
 
 sealed class CourseMode: Serializable {
     class Edit(val courseId: Long): CourseMode()
@@ -28,7 +30,11 @@ class CourseDialog: DialogFragment() {
 
     private val args: CourseDialogArgs by navArgs()
 
-    private val courseViewModel: CourseViewModel by viewModels()
+    @Inject
+    lateinit var courseViewModelFactory: CourseViewModelFactory
+    private val courseViewModel: CourseViewModel by viewModels {
+        CourseViewModel.provideFactory(courseViewModelFactory, args.courseMode)
+    }
 
     private lateinit var course: Course
 
@@ -38,11 +44,6 @@ class CourseDialog: DialogFragment() {
         get() = if (binding.theoreticalCheckBox.isChecked) binding.theoreticalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
     private val inputPracticalDegree: Int
         get() = if (binding.practicalCheckBox.isChecked) binding.practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        courseViewModel.setInput(args.courseMode)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
