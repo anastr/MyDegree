@@ -1,5 +1,6 @@
 package com.github.anastr.myscore.room.entity
 
+import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -18,4 +19,9 @@ data class Course(
 ) {
     val score: Int
         get() = theoreticalScore + practicalScore
+}
+
+object CourseDiffCallback : DiffUtil.ItemCallback<Course>() {
+    override fun areItemsTheSame(oldItem: Course, newItem: Course) = oldItem.uid == newItem.uid
+    override fun areContentsTheSame(oldItem: Course, newItem: Course) = oldItem == newItem
 }

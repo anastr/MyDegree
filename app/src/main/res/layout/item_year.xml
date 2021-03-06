@@ -12,7 +12,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/text_year_name"
+            android:id="@+id/year_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -25,7 +25,8 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/button_semester_1"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/semester_1_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -33,7 +34,8 @@
                 android:text="@string/semester_1" />
 
             <Button
-                android:id="@+id/button_semester_2"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/semester_2_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -48,7 +50,7 @@
             android:orientation="horizontal" >
 
             <TextView
-                android:id="@+id/text_score_semester_1"
+                android:id="@+id/score_semester_1_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -56,7 +58,7 @@
                 tools:text="75.3" />
 
             <TextView
-                android:id="@+id/text_score_semester_2"
+                android:id="@+id/score_semester_2_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -66,7 +68,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/text_score"
+            android:id="@+id/score_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"

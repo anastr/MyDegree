@@ -1,5 +1,6 @@
 package com.github.anastr.myscore.room.view
 
+import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
 
 data class YearWithSemester(
@@ -16,4 +17,9 @@ data class YearWithSemester(
             else
                 sum / 2f
         }
+}
+
+object YearWithSemesterDiffCallback : DiffUtil.ItemCallback<YearWithSemester>() {
+    override fun areItemsTheSame(oldItem: YearWithSemester, newItem: YearWithSemester) = oldItem.uid == newItem.uid
+    override fun areContentsTheSame(oldItem: YearWithSemester, newItem: YearWithSemester) = oldItem == newItem
 }

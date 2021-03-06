@@ -13,7 +13,7 @@
         android:padding="5dp">
 
         <TextView
-            android:id="@+id/tv_count"
+            android:id="@+id/count_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="19sp"
@@ -22,7 +22,7 @@
             tools:text=" 0" />
 
         <TextView
-            android:id="@+id/tv_course_name"
+            android:id="@+id/course_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -31,7 +31,7 @@
             android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
             tools:text="المداواة اللبية 1"
-            app:layout_constraintStart_toEndOf="@+id/tv_count"
+            app:layout_constraintStart_toEndOf="@+id/count_text_view"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -48,10 +48,10 @@
             android:orientation="horizontal"
             android:padding="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_course_name">
+            app:layout_constraintTop_toBottomOf="@+id/course_text_view">
 
             <TextView
-                android:id="@+id/tv_theoretical"
+                android:id="@+id/theoretical_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -60,7 +60,7 @@
                 tools:text="@string/theoretical" />
 
             <TextView
-                android:id="@+id/tv_practical"
+                android:id="@+id/practical_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
@@ -87,17 +87,16 @@
                 android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_marginEnd="4dp"
-                android:textSize="21sp"
                 android:textStyle="bold"
                 android:text="@string/total" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_total"
+                android:id="@+id/total_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="5dp"
                 android:gravity="center"
-                android:padding="6dp"
+                android:padding="4dp"
                 android:background="@drawable/rectangle_no_color"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#fff"
