@@ -132,6 +132,23 @@ class YearViewModel @Inject constructor(
         }
     }
 
+    fun deleteBackup() {
+        _firebaseState.value = FirebaseState.Loading
+        viewModelScope.launch {
+            val db = Firebase.firestore
+            val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
+            db.runTransaction { transaction ->
+                transaction.delete(docRef)
+            }
+                .addOnSuccessListener {
+                    _firebaseState.value = FirebaseState.DeleteBackupSucceeded
+                }
+                .addOnFailureListener { e ->
+                    _firebaseState.value = FirebaseState.FirestoreError(e)
+                }
+        }
+    }
+
 }
 
 sealed class FirebaseState {
@@ -141,6 +158,7 @@ sealed class FirebaseState {
     class FirestoreError(val exception: Exception) : FirebaseState()
     object SendBackupSucceeded : FirebaseState()
     object ReceiveBackupSucceeded : FirebaseState()
+    object DeleteBackupSucceeded : FirebaseState()
 }
 
 enum class ErrorCode {

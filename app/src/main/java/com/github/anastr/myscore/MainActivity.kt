@@ -142,6 +142,10 @@ class MainActivity : AppCompatActivity(),
                     navController.popBackStack(R.id.year_page_fragment, false)
                     showSnackBar(getString(R.string.backup_received_from_server), Snackbar.LENGTH_LONG)
                 }
+                FirebaseState.DeleteBackupSucceeded -> {
+                    hideProgress()
+                    showSnackBar(getString(R.string.backup_deleted_successfully), Snackbar.LENGTH_LONG)
+                }
             }
         }
     }
@@ -253,7 +257,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun registerWithGoogle() {
+    fun registerWithGoogle() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestProfile()

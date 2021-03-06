@@ -49,8 +49,13 @@
 
     <!-- General Preferences -->
     <string name="general_header">عام</string>
+    <string name="sync_header">مزامنة البيانات</string>
     <string name="pass_degree">علامة النجاح</string>
     <string name="theme">Theme</string>
+    <string name="enable_auto_sync">تمكين المزامنة التلقائية</string>
+    <string name="delete_server_data">حذف النسخة الاحتياطية</string>
+    <string name="summary_auto_sync_on">رفع نسخة احتياطية اسبوعياً بشكل تلقائي.</string>
+    <string name="summary_auto_sync_off">عدم رفع نسخة احتياطية تلقائياَ.</string>
     <string-array name="themes">
         <item>بحسب اعدادات النظام</item>
         <item>Light</item>
@@ -73,5 +78,7 @@
     <string name="loading_in_progress">جاري التحميل</string>
     <string name="receive_data_warning_message">سيتم استبدال البيانات الموجودة على جهازك بالنسخة الاحتياطة. هل تريد المتابعة؟</string>
     <string name="send_backup_warning_message">سيتم فقد النسخ الاحتياطية السابقة واستبدالهة بالبيانات الحالية، هل تريد المتابعة؟</string>
+    <string name="delete_backup_warning_message">ستفقد بيانات النسخة الاحتياطية على الخادم، هل تريد المتابعة؟</string>
+    <string name="backup_deleted_successfully">تم حذف النسخة الاحتياطية</string>
 
 </resources>
