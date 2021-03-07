@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity(),
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        hideProgress()
-
         yearViewModel.themeLiveData.observe(this) { nightMode ->
             AppCompatDelegate.setDefaultNightMode(
                 when(nightMode) {
@@ -108,9 +106,9 @@ class MainActivity : AppCompatActivity(),
 
         yearViewModel.firebaseState.observe(this) { state ->
             when (state) {
+                FirebaseState.Normal -> hideProgress()
                 FirebaseState.Loading -> showProgress()
                 is FirebaseState.GoogleLoginSucceeded -> {
-                    hideProgress()
                     MaterialAlertDialogBuilder(this)
                         .setMessage(
                             String.format(
@@ -122,7 +120,6 @@ class MainActivity : AppCompatActivity(),
                         .show()
                 }
                 is FirebaseState.Error -> {
-                    hideProgress()
                     val message = when (state.errorCode) {
                         ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
                         ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
@@ -130,22 +127,21 @@ class MainActivity : AppCompatActivity(),
                     showSnackBar(message)
                 }
                 is FirebaseState.FirestoreError -> {
-                    hideProgress()
                     manageFirebaseError(state.exception)
                 }
                 FirebaseState.SendBackupSucceeded -> {
-                    hideProgress()
                     showSnackBar(getString(R.string.backup_saved_to_server), Snackbar.LENGTH_LONG)
                 }
                 FirebaseState.ReceiveBackupSucceeded -> {
-                    hideProgress()
                     navController.popBackStack(R.id.year_page_fragment, false)
                     showSnackBar(getString(R.string.backup_received_from_server), Snackbar.LENGTH_LONG)
                 }
                 FirebaseState.DeleteBackupSucceeded -> {
-                    hideProgress()
                     showSnackBar(getString(R.string.backup_deleted_successfully), Snackbar.LENGTH_LONG)
                 }
+            }
+            if (state !is FirebaseState.Normal && state !is FirebaseState.Loading) {
+                yearViewModel.toNormalState()
             }
         }
     }
@@ -155,6 +151,9 @@ class MainActivity : AppCompatActivity(),
         destination: NavDestination,
         arguments: Bundle?
     ) {
+        if (destination.id != R.id.courseListFragment) {
+            title = navController.currentDestination?.label
+        }
         when (destination.id) {
             R.id.settingsFragment -> {
                 binding.content.motionLayout.transitionToEnd()

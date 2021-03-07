@@ -31,7 +31,7 @@ class YearViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val _firebaseState = MutableLiveData<FirebaseState>()
+    private val _firebaseState = MutableLiveData<FirebaseState>(FirebaseState.Normal)
     val firebaseState: LiveData<FirebaseState> = _firebaseState
 
     private val passDegreeLiveData: LiveData<Int> =
@@ -149,9 +149,13 @@ class YearViewModel @Inject constructor(
         }
     }
 
+    fun toNormalState() {
+        _firebaseState.value = FirebaseState.Normal
+    }
 }
 
 sealed class FirebaseState {
+    object Normal : FirebaseState()
     object Loading : FirebaseState()
     class GoogleLoginSucceeded(val user: FirebaseUser) : FirebaseState()
     class Error(val errorCode: ErrorCode) : FirebaseState()
