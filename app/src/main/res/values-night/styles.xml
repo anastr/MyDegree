@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar"/>
+
     <style name="Widget.App.Snackbar.Dark" parent="Widget.MaterialComponents.Snackbar">
         <item name="backgroundTint">@color/nightColorSnackBar</item>
         <item name="android:textColor">@color/nightColorOnSnackBar</item>

@@ -6,6 +6,9 @@
 
     <style name="AppTheme.Dark" parent="AppTheme.Light">
 
+        <item name="colorPrimary">@color/colorPrimaryNight</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkNight</item>
+
         <item name="snackbarStyle">@style/Widget.App.Snackbar.Dark</item>
 
     </style>
