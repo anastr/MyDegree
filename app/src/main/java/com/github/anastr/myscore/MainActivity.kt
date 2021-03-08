@@ -151,9 +151,7 @@ class MainActivity : AppCompatActivity(),
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        if (destination.id != R.id.courseListFragment) {
-            title = navController.currentDestination?.label
-        }
+        manageToolbar(destination)
         when (destination.id) {
             R.id.settingsFragment -> {
                 binding.content.motionLayout.transitionToEnd()
@@ -183,7 +181,19 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             R.id.courseDialog -> {
+                binding.content.motionLayout.transitionToEnd()
                 currentYearId = -1L
+            }
+        }
+    }
+
+    private fun manageToolbar(destination: NavDestination) {
+        when (destination.id) {
+            R.id.settingsFragment,
+            R.id.aboutFragment,
+            R.id.year_page_fragment,
+            R.id.chart_page_fragment -> {
+                title = navController.currentDestination?.label
             }
         }
     }

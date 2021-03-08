@@ -46,6 +46,13 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
             duration = resources.getInteger(R.integer.motion_duration_large).toLong()
         }
+
+        requireActivity().title =
+            String.format(Locale.ENGLISH,
+                requireContext().getString(R.string.title_courses),
+                args.yearPosition+1,
+                args.semester.position+1,
+            )
     }
 
     override fun onCreateView(
@@ -58,13 +65,6 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().title =
-            String.format(Locale.ENGLISH,
-                requireContext().getString(R.string.title_courses),
-                args.yearPosition+1,
-                args.semester.position+1,
-            )
 
         binding.recyclerView.apply {
             setHasFixedSize(true)
