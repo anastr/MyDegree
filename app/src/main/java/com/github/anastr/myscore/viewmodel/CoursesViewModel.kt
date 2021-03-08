@@ -1,10 +1,7 @@
 package com.github.anastr.myscore.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
@@ -26,7 +23,7 @@ class CoursesViewModel @AssistedInject constructor(
         PreferenceManager.getDefaultSharedPreferences(application)
             .intLiveData("passDegree", 60)
 
-    val courses: LiveData<List<Course>> = courseRepository.getCourses(yearId, semester)
+    val courses: LiveData<List<Course>> = courseRepository.getCourses(yearId, semester).asLiveData()
 
     fun insertCourses(vararg courses: Course) {
         viewModelScope.launch {

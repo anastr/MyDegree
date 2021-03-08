@@ -7,6 +7,7 @@ import com.github.anastr.myscore.room.entity.Course
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class CourseViewModel @AssistedInject constructor(
@@ -17,6 +18,8 @@ class CourseViewModel @AssistedInject constructor(
     val course: LiveData<Course?> =
         when (courseMode) {
             is CourseMode.Edit -> courseRepository.getCourse(courseMode.courseId)
+                .distinctUntilChanged()
+                .asLiveData()
             is CourseMode.New -> MutableLiveData(
                 Course(
                     yearId = courseMode.yearId,

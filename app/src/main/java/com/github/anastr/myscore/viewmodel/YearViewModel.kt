@@ -20,6 +20,7 @@ import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,15 +42,18 @@ class YearViewModel @Inject constructor(
         sharedPreferences.stringLiveData("themePref", "-1")
 
     val years: LiveData<List<YearWithSemester>> = Transformations.switchMap(passDegreeLiveData) {
-        yearRepository.getYearsOrdered(it)
+        yearRepository.getYearsOrdered(it).asLiveData()
     }
 
     val finalDegree = Transformations.switchMap(passDegreeLiveData) {
         yearRepository.getFinalDegree(it)
+            .distinctUntilChanged()
+            .asLiveData()
     }
 
-    val yearsCount: LiveData<Int>
-            = yearRepository.getYearsCount()
+    val yearsCount: LiveData<Int> = yearRepository.getYearsCount()
+        .distinctUntilChanged()
+        .asLiveData()
 
     fun insertYears(vararg years: Year) = viewModelScope.launch { databaseRepository.insertAll(*years) }
 

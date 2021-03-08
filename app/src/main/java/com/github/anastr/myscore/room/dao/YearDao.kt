@@ -1,10 +1,10 @@
 package com.github.anastr.myscore.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.room.view.YearWithSemester
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface YearDao: BaseDao<Year> {
@@ -25,7 +25,7 @@ interface YearDao: BaseDao<Year> {
             ORDER BY year.year_order ASC 
     """
     )
-    fun getAllOrdered(passDegree: Int): LiveData<List<YearWithSemester>>
+    fun getAllOrdered(passDegree: Int): Flow<List<YearWithSemester>>
 
     @Query(
         """
@@ -34,10 +34,10 @@ interface YearDao: BaseDao<Year> {
         FROM course
     """
     )
-    fun getFinalDegree(passDegree: Int): LiveData<Float?>
+    fun getFinalDegree(passDegree: Int): Flow<Float?>
 
     @Query("SELECT COUNT() FROM year")
-    fun getYearsCount(): LiveData<Int>
+    fun getYearsCount(): Flow<Int>
 
 //    @Query("SELECT * FROM course WHERE uid IN (:courseIds)")
 //    fun loadAllByIds(courseIds: LongArray): List<Course>
