@@ -12,20 +12,19 @@ import java.util.concurrent.TimeUnit
 typealias ClickListener = () -> Unit
 
 private val clickPublisher: PublishProcessor<ClickListener> by lazy {
-    val p = PublishProcessor.create<ClickListener>()
-    p.throttleFirst(300, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .subscribe({
-            try {
-                it.invoke()
-            }
-            catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }, {
-            it.printStackTrace()
-        })
-    return@lazy p
+    return@lazy PublishProcessor.create<ClickListener>().apply {
+        throttleFirst(300, TimeUnit.MILLISECONDS)
+            .onBackpressureDrop()
+            .subscribe({
+                try {
+                    it.invoke()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }, {
+                it.printStackTrace()
+            })
+    }
 }
 
 fun View.rapidClickListener(clickListener: ClickListener) {

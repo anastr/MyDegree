@@ -11,7 +11,9 @@ import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.util.*
+import com.github.anastr.myscore.util.MAX_COURSES
+import com.github.anastr.myscore.util.hideFab
+import com.github.anastr.myscore.util.showFab
 import com.github.anastr.myscore.viewmodel.CoursesViewModel
 import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -74,20 +76,18 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
         coursesViewModel.passDegreeLiveData.observe(viewLifecycleOwner) { passDegree ->
             courseAdapter.passDegree = passDegree
         }
-        coursesViewModel.courses.toFlowable(this)
-            .subscribe { list ->
-                if (list.size >= MAX_COURSES)
-                    fab.hideFab()
-                else
-                    fab.showFab()
-                courseAdapter.submitList(list)
-                binding.progressBar.visibility = View.GONE
-                if (list.isEmpty())
-                    binding.textNoData.visibility = View.VISIBLE
-                else
-                    binding.textNoData.visibility = View.GONE
-            }
-            .disposeOnDestroy(this)
+        coursesViewModel.courses.observe(viewLifecycleOwner) { list ->
+            if (list.size >= MAX_COURSES)
+                fab.hideFab()
+            else
+                fab.showFab()
+            courseAdapter.submitList(list)
+            binding.progressBar.visibility = View.GONE
+            if (list.isEmpty())
+                binding.textNoData.visibility = View.VISIBLE
+            else
+                binding.textNoData.visibility = View.GONE
+        }
     }
 
     override fun onClickCourse(course: Course) {

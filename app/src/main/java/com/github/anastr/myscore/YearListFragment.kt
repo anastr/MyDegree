@@ -14,10 +14,8 @@ import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.room.view.YearWithSemester
-import com.github.anastr.myscore.util.disposeOnDestroy
 import com.github.anastr.myscore.util.drag.DragItemTouchHelper
 import com.github.anastr.myscore.util.swipe.SwipeItemTouchHelper
-import com.github.anastr.myscore.util.toFlowable
 import com.github.anastr.myscore.viewmodel.YearViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -65,16 +63,14 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
             adapter = yearAdapter
         }
 
-        yearViewModel.years.toFlowable(viewLifecycleOwner)
-            .subscribe { newList ->
-                yearAdapter.updateData(newList)
-                binding.progressBar.visibility = View.GONE
-                if (newList.isEmpty())
-                    binding.textNoData.visibility = View.VISIBLE
-                else
-                    binding.textNoData.visibility = View.GONE
-            }
-            .disposeOnDestroy(viewLifecycleOwner)
+        yearViewModel.years.observe(viewLifecycleOwner) { newList ->
+            yearAdapter.updateData(newList)
+            binding.progressBar.visibility = View.GONE
+            if (newList.isEmpty())
+                binding.textNoData.visibility = View.VISIBLE
+            else
+                binding.textNoData.visibility = View.GONE
+        }
     }
 
     private fun navigateToDegrees(yearPosition: Int, yearId: Long, semester: Semester) {

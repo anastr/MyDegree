@@ -1,7 +1,10 @@
 package com.github.anastr.myscore.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.preference.PreferenceManager
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
@@ -10,11 +13,10 @@ import com.github.anastr.myscore.util.intLiveData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.launch
 
 class CoursesViewModel @AssistedInject constructor(
     application: Application,
-    private val courseRepository: CourseRepository,
+    courseRepository: CourseRepository,
     @Assisted private val yearId: Long,
     @Assisted private val semester: Semester,
 ): ViewModel() {
@@ -24,18 +26,6 @@ class CoursesViewModel @AssistedInject constructor(
             .intLiveData("passDegree", 60)
 
     val courses: LiveData<List<Course>> = courseRepository.getCourses(yearId, semester).asLiveData()
-
-    fun insertCourses(vararg courses: Course) {
-        viewModelScope.launch {
-            courseRepository.insertCourses(*courses)
-        }
-    }
-
-    fun deleteCourse(course: Course) {
-        viewModelScope.launch {
-            courseRepository.deleteCourse(course)
-        }
-    }
 
     companion object {
         fun provideFactory(
