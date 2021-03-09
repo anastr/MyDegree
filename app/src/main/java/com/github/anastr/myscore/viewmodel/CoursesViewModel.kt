@@ -27,21 +27,19 @@ class CoursesViewModel @AssistedInject constructor(
 
     val courses: LiveData<List<Course>> = courseRepository.getCourses(yearId, semester).asLiveData()
 
-    companion object {
-        fun provideFactory(
-            assistedFactory: CoursesViewModelFactory,
-            yearId: Long,
-            semester: Semester,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(yearId, semester) as T
-            }
-        }
-    }
 }
 
 @AssistedFactory
 interface CoursesViewModelFactory {
     fun create(yearId: Long, semester: Semester): CoursesViewModel
+}
+
+fun CoursesViewModelFactory.provideFactory(
+    yearId: Long,
+    semester: Semester,
+): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return create(yearId, semester) as T
+    }
 }

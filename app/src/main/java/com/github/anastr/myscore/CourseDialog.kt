@@ -13,6 +13,7 @@ import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseViewModel
 import com.github.anastr.myscore.viewmodel.CourseViewModelFactory
+import com.github.anastr.myscore.viewmodel.provideFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
@@ -33,7 +34,7 @@ class CourseDialog: DialogFragment() {
     @Inject
     lateinit var courseViewModelFactory: CourseViewModelFactory
     private val courseViewModel: CourseViewModel by viewModels {
-        CourseViewModel.provideFactory(courseViewModelFactory, args.courseMode)
+        courseViewModelFactory.provideFactory(args.courseMode)
     }
 
     private lateinit var course: Course

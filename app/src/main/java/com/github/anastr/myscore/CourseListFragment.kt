@@ -16,6 +16,7 @@ import com.github.anastr.myscore.util.hideFab
 import com.github.anastr.myscore.util.showFab
 import com.github.anastr.myscore.viewmodel.CoursesViewModel
 import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
+import com.github.anastr.myscore.viewmodel.provideFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +34,7 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
     @Inject
     lateinit var coursesViewModelFactory: CoursesViewModelFactory
     private val coursesViewModel: CoursesViewModel by viewModels {
-        CoursesViewModel.provideFactory(coursesViewModelFactory, args.yearId, args.semester)
+        coursesViewModelFactory.provideFactory(args.yearId, args.semester)
     }
 
     private val courseAdapter = CourseAdapter(this)

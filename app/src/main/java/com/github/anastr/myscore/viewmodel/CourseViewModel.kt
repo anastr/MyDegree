@@ -51,20 +51,18 @@ class CourseViewModel @AssistedInject constructor(
         }
     }
 
-    companion object {
-        fun provideFactory(
-            courseViewModelFactory: CourseViewModelFactory,
-            courseMode: CourseMode,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return courseViewModelFactory.create(courseMode) as T
-            }
-        }
-    }
 }
 
 @AssistedFactory
 interface CourseViewModelFactory {
     fun create(courseMode: CourseMode): CourseViewModel
+}
+
+fun CourseViewModelFactory.provideFactory(
+    courseMode: CourseMode,
+): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
+        return create(courseMode) as T
+    }
 }
