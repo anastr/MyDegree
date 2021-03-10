@@ -66,6 +66,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
                 if (newValue == true) {
                     val sendLogsWorkRequest =
                         PeriodicWorkRequestBuilder<UploadBackupWorker>(7, TimeUnit.DAYS)
+                            .setInitialDelay(7, TimeUnit.DAYS)
                             .setConstraints(
                                 Constraints.Builder()
                                     .setRequiredNetworkType(NetworkType.CONNECTED)
