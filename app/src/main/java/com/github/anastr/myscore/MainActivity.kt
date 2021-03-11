@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -28,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
@@ -104,44 +106,48 @@ class MainActivity : AppCompatActivity(),
             this@MainActivity
         )
 
-        mainViewModel.firebaseState.observe(this) { state ->
-            when (state) {
-                FirebaseState.Normal -> hideProgress()
-                FirebaseState.Loading -> showProgress()
-                is FirebaseState.GoogleLoginSucceeded -> {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(
-                            String.format(
-                                getString(R.string.firebase_signin_succeeded),
-                                state.user.displayName
+        mainViewModel.loadingLiveData.observe(this) { isLoading ->
+            if (isLoading)
+                showProgress()
+            else
+                hideProgress()
+        }
+
+        lifecycleScope.launchWhenStarted {
+            mainViewModel.firebaseStateFlow.collect { state ->
+                when (state) {
+                    is FirebaseState.GoogleLoginSucceeded -> {
+                        MaterialAlertDialogBuilder(this@MainActivity)
+                            .setMessage(
+                                String.format(
+                                    getString(R.string.firebase_signin_succeeded),
+                                    state.user.displayName
+                                )
                             )
-                        )
-                        .setPositiveButton(R.string.ok) { _, _ -> }
-                        .show()
-                }
-                is FirebaseState.Error -> {
-                    val message = when (state.errorCode) {
-                        ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
-                        ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
+                            .setPositiveButton(R.string.ok) { _, _ -> }
+                            .show()
                     }
-                    showSnackBar(message)
+                    is FirebaseState.Error -> {
+                        val message = when (state.errorCode) {
+                            ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
+                            ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
+                        }
+                        showSnackBar(message)
+                    }
+                    is FirebaseState.FirestoreError -> {
+                        manageFirebaseError(state.exception)
+                    }
+                    FirebaseState.SendBackupSucceeded -> {
+                        showSnackBar(getString(R.string.backup_saved_to_server), Snackbar.LENGTH_LONG)
+                    }
+                    FirebaseState.ReceiveBackupSucceeded -> {
+                        navController.popBackStack(R.id.year_page_fragment, false)
+                        showSnackBar(getString(R.string.backup_received_from_server), Snackbar.LENGTH_LONG)
+                    }
+                    FirebaseState.DeleteBackupSucceeded -> {
+                        showSnackBar(getString(R.string.backup_deleted_successfully), Snackbar.LENGTH_LONG)
+                    }
                 }
-                is FirebaseState.FirestoreError -> {
-                    manageFirebaseError(state.exception)
-                }
-                FirebaseState.SendBackupSucceeded -> {
-                    showSnackBar(getString(R.string.backup_saved_to_server), Snackbar.LENGTH_LONG)
-                }
-                FirebaseState.ReceiveBackupSucceeded -> {
-                    navController.popBackStack(R.id.year_page_fragment, false)
-                    showSnackBar(getString(R.string.backup_received_from_server), Snackbar.LENGTH_LONG)
-                }
-                FirebaseState.DeleteBackupSucceeded -> {
-                    showSnackBar(getString(R.string.backup_deleted_successfully), Snackbar.LENGTH_LONG)
-                }
-            }
-            if (state !is FirebaseState.Normal && state !is FirebaseState.Loading) {
-                mainViewModel.toNormalState()
             }
         }
     }

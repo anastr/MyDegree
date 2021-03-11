@@ -17,7 +17,11 @@ import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,8 +32,17 @@ class MainViewModel @Inject constructor(
 ): ViewModel() {
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val _firebaseState = MutableLiveData<FirebaseState>(FirebaseState.Normal)
-    val firebaseState: LiveData<FirebaseState> = _firebaseState
+
+    private val _loadingLiveData = MutableLiveData(false)
+    val loadingLiveData: LiveData<Boolean> = _loadingLiveData
+
+    private val _firebaseStateFlow = MutableSharedFlow<FirebaseState>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val firebaseStateFlow: Flow<FirebaseState> =
+        _firebaseStateFlow
+            .onEach { _loadingLiveData.value = false }
 
     val themeLiveData: LiveData<String> =
         sharedPreferences.stringLiveData("themePref", "-1")
@@ -41,20 +54,20 @@ class MainViewModel @Inject constructor(
     fun insertYears(vararg years: Year) = viewModelScope.launch { databaseRepository.insertAll(*years) }
 
     fun firebaseAuthWithGoogle(idToken: String) {
-        _firebaseState.value = FirebaseState.Loading
+        _loadingLiveData.value = true
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 val user = auth.currentUser
-                _firebaseState.value = FirebaseState.GoogleLoginSucceeded(user!!)
+                _firebaseStateFlow.tryEmit(FirebaseState.GoogleLoginSucceeded(user!!))
             }
             .addOnFailureListener { e ->
-                _firebaseState.value = FirebaseState.FirestoreError(e)
+                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
     }
 
     fun sendBackup() {
-        _firebaseState.value = FirebaseState.Loading
+        _loadingLiveData.value = true
         viewModelScope.launch {
             val db = Firebase.firestore
             val years = databaseRepository.getYears()
@@ -68,16 +81,16 @@ class MainViewModel @Inject constructor(
                 transaction.set(docRef, degreeDocument)
             }
                 .addOnSuccessListener {
-                    _firebaseState.value = FirebaseState.SendBackupSucceeded
+                    _firebaseStateFlow.tryEmit(FirebaseState.SendBackupSucceeded)
                 }
                 .addOnFailureListener { e ->
-                    _firebaseState.value = FirebaseState.FirestoreError(e)
+                    _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
                 }
         }
     }
 
     fun receiveBackup() {
-        _firebaseState.value = FirebaseState.Loading
+        _loadingLiveData.value = true
         val db = Firebase.firestore
         val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
         docRef.get(Source.SERVER).addOnSuccessListener { documentSnapshot ->
@@ -85,18 +98,16 @@ class MainViewModel @Inject constructor(
                 if (documentSnapshot.exists()) {
                     val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
                     saveDataFromFireStore(degreeDocument!!)
+                } else {
+                    _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.NoDataOnServer))
                 }
-                else {
-                    _firebaseState.value = FirebaseState.Error(ErrorCode.NoDataOnServer)
-                }
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
-                _firebaseState.value = FirebaseState.Error(ErrorCode.DataCorrupted)
+                _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
             }
         }
             .addOnFailureListener { e ->
-                _firebaseState.value = FirebaseState.FirestoreError(e)
+                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
     }
 
@@ -111,35 +122,30 @@ class MainViewModel @Inject constructor(
                 val courses = degreeDocument.courses!!.map { it.toCourse() }
                 databaseRepository.insertAll(*courses.toTypedArray())
             }
-            _firebaseState.value = FirebaseState.ReceiveBackupSucceeded
+            _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
         }
     }
 
     fun deleteBackup() {
-        _firebaseState.value = FirebaseState.Loading
+        _loadingLiveData.value = true
         viewModelScope.launch {
             val db = Firebase.firestore
-            val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
+            val docRef =
+                db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
             db.runTransaction { transaction ->
                 transaction.delete(docRef)
             }
                 .addOnSuccessListener {
-                    _firebaseState.value = FirebaseState.DeleteBackupSucceeded
+                    _firebaseStateFlow.tryEmit(FirebaseState.DeleteBackupSucceeded)
                 }
                 .addOnFailureListener { e ->
-                    _firebaseState.value = FirebaseState.FirestoreError(e)
+                    _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
                 }
         }
-    }
-
-    fun toNormalState() {
-        _firebaseState.value = FirebaseState.Normal
     }
 }
 
 sealed class FirebaseState {
-    object Normal : FirebaseState()
-    object Loading : FirebaseState()
     class GoogleLoginSucceeded(val user: FirebaseUser) : FirebaseState()
     class Error(val errorCode: ErrorCode) : FirebaseState()
     class FirestoreError(val exception: Exception) : FirebaseState()

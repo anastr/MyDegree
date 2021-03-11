@@ -11,7 +11,6 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.work.*
 import com.github.anastr.myscore.util.pref.NumberPickerPreference
 import com.github.anastr.myscore.util.pref.NumberPreferenceDialogFragmentCompat
-import com.github.anastr.myscore.viewmodel.FirebaseState
 import com.github.anastr.myscore.viewmodel.MainViewModel
 import com.github.anastr.myscore.worker.UploadBackupWorker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -56,7 +55,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<CheckBoxPreference>("syncFirestoreData")
             ?.setOnPreferenceChangeListener { _, newValue ->
-                if (mainViewModel.firebaseState.value == FirebaseState.Loading) {
+                if (mainViewModel.loadingLiveData.value == true) {
                     return@setOnPreferenceChangeListener false
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {
@@ -87,7 +86,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("deleteServerData")
             ?.setOnPreferenceClickListener {
-                if (mainViewModel.firebaseState.value == FirebaseState.Loading) {
+                if (mainViewModel.loadingLiveData.value == true) {
                     return@setOnPreferenceClickListener true
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {
