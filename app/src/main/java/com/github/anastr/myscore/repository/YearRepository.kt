@@ -14,7 +14,5 @@ class YearRepository @Inject constructor (
 
     fun getFinalDegree(passDegree: Int):Flow<Float?> = yearDao.getFinalDegree(passDegree)
 
-    fun getYearsCount(): Flow<Int> = yearDao.getYearsCount()
-
     suspend fun updateYears(vararg years: Year) = yearDao.updateAll(*years)
 }

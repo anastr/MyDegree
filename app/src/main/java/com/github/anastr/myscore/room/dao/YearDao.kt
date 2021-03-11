@@ -36,9 +36,6 @@ interface YearDao: BaseDao<Year> {
     )
     fun getFinalDegree(passDegree: Int): Flow<Float?>
 
-    @Query("SELECT COUNT() FROM year")
-    fun getYearsCount(): Flow<Int>
-
 //    @Query("SELECT * FROM course WHERE uid IN (:courseIds)")
 //    fun loadAllByIds(courseIds: LongArray): List<Course>
 

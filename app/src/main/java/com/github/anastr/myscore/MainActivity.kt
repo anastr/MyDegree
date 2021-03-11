@@ -19,7 +19,7 @@ import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.ErrorCode
 import com.github.anastr.myscore.viewmodel.FirebaseState
-import com.github.anastr.myscore.viewmodel.YearViewModel
+import com.github.anastr.myscore.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(),
 
     private var yearsCount = 0
 
-    private val yearViewModel: YearViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     private var currentYearId: Long = -1L
     private var currentSemester: Semester = Semester.FirstSemester
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        yearViewModel.themeLiveData.observe(this) { nightMode ->
+        mainViewModel.themeLiveData.observe(this) { nightMode ->
             AppCompatDelegate.setDefaultNightMode(
                 when(nightMode) {
                     "1" -> AppCompatDelegate.MODE_NIGHT_NO
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(),
             )
         }
 
-        yearViewModel.yearsCount.observe(this) {
+        mainViewModel.yearsCount.observe(this) {
             yearsCount = it
             manageFabVisibility()
         }
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(),
         binding.content.fab.rapidClickListener {
             if (currentYearId == -1L) {
                 if (yearsCount < MAX_YEARS)
-                    yearViewModel.insertYears(Year(order = yearsCount))
+                    mainViewModel.insertYears(Year(order = yearsCount))
             }
             else {
                 val action = CourseListFragmentDirections.actionCourseListFragmentToCourseDialog(
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(),
             this@MainActivity
         )
 
-        yearViewModel.firebaseState.observe(this) { state ->
+        mainViewModel.firebaseState.observe(this) { state ->
             when (state) {
                 FirebaseState.Normal -> hideProgress()
                 FirebaseState.Loading -> showProgress()
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             if (state !is FirebaseState.Normal && state !is FirebaseState.Loading) {
-                yearViewModel.toNormalState()
+                mainViewModel.toNormalState()
             }
         }
     }
@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(R.string.send_backup_warning_message)
-                        .setPositiveButton(R.string._continue) { _, _ -> yearViewModel.sendBackup() }
+                        .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .show()
                 }
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(R.string.receive_data_warning_message)
-                        .setPositiveButton(R.string.receive) { _, _ -> yearViewModel.receiveBackup() }
+                        .setPositiveButton(R.string.receive) { _, _ -> mainViewModel.receiveBackup() }
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .show()
                 }
@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity(),
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                yearViewModel.firebaseAuthWithGoogle(account.idToken!!)
+                mainViewModel.firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 showSnackBar(getString(R.string.google_signin_failed))
             }

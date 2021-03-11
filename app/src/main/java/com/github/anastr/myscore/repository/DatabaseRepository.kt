@@ -3,6 +3,7 @@ package com.github.anastr.myscore.repository
 import com.github.anastr.myscore.room.dao.DatabaseDao
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Year
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor (
@@ -20,5 +21,7 @@ class DatabaseRepository @Inject constructor (
     suspend fun deleteYear(year: Year) = databaseDao.deleteYear(year)
 
     suspend fun deleteAll() = databaseDao.deleteAll()
+
+    fun getYearsCount(): Flow<Int> = databaseDao.getYearsCount()
 
 }

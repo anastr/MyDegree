@@ -3,6 +3,7 @@ package com.github.anastr.myscore.room.dao
 import androidx.room.*
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Year
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DatabaseDao {
@@ -15,6 +16,9 @@ interface DatabaseDao {
 
     @Query("SELECT * FROM year ORDER BY year_order ASC")
     suspend fun getAllYears(): List<Year>
+
+    @Query("SELECT COUNT() FROM year")
+    fun getYearsCount(): Flow<Int>
 
     @Query("SELECT * FROM course")
     suspend fun getAllCourses(): List<Course>

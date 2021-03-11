@@ -12,7 +12,7 @@ import androidx.work.*
 import com.github.anastr.myscore.util.pref.NumberPickerPreference
 import com.github.anastr.myscore.util.pref.NumberPreferenceDialogFragmentCompat
 import com.github.anastr.myscore.viewmodel.FirebaseState
-import com.github.anastr.myscore.viewmodel.YearViewModel
+import com.github.anastr.myscore.viewmodel.MainViewModel
 import com.github.anastr.myscore.worker.UploadBackupWorker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -26,7 +26,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
     private val firebaseAnalytics: FirebaseAnalytics by lazy { Firebase.analytics }
 
-    private val yearViewModel: YearViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +56,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<CheckBoxPreference>("syncFirestoreData")
             ?.setOnPreferenceChangeListener { _, newValue ->
-                if (yearViewModel.firebaseState.value == FirebaseState.Loading) {
+                if (mainViewModel.firebaseState.value == FirebaseState.Loading) {
                     return@setOnPreferenceChangeListener false
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {
@@ -87,7 +87,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("deleteServerData")
             ?.setOnPreferenceClickListener {
-                if (yearViewModel.firebaseState.value == FirebaseState.Loading) {
+                if (mainViewModel.firebaseState.value == FirebaseState.Loading) {
                     return@setOnPreferenceClickListener true
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {
@@ -97,7 +97,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage(R.string.delete_backup_warning_message)
                         .setPositiveButton(R.string.delete) { _, _ ->
-                            yearViewModel.deleteBackup()
+                            mainViewModel.deleteBackup()
                         }
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .show()
