@@ -158,27 +158,23 @@ class MainActivity : AppCompatActivity(),
         arguments: Bundle?
     ) {
         manageToolbar(destination)
+        manageBottomBar(destination)
         when (destination.id) {
             R.id.settingsFragment -> {
-                binding.content.motionLayout.transitionToEnd()
                 binding.content.fab.hideFab()
             }
             R.id.aboutFragment -> {
-                binding.content.motionLayout.transitionToEnd()
                 binding.content.fab.hideFab()
             }
             R.id.year_page_fragment -> {
-                binding.content.motionLayout.transitionToStart()
                 manageFabVisibility()
                 currentYearId = -1L
             }
             R.id.chart_page_fragment -> {
-                binding.content.motionLayout.transitionToStart()
                 binding.content.fab.hideFab()
                 currentYearId = -1L
             }
             R.id.courseListFragment -> {
-                binding.content.motionLayout.transitionToEnd()
                 if (arguments == null) {
                     currentYearId = -1L
                 } else {
@@ -187,7 +183,6 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             R.id.courseDialog -> {
-                binding.content.motionLayout.transitionToEnd()
                 currentYearId = -1L
             }
         }
@@ -201,6 +196,14 @@ class MainActivity : AppCompatActivity(),
             R.id.chart_page_fragment -> {
                 title = navController.currentDestination?.label
             }
+        }
+    }
+
+    private fun manageBottomBar(destination: NavDestination) {
+        when (destination.id) {
+            R.id.year_page_fragment,
+            R.id.chart_page_fragment -> binding.content.motionLayout.transitionToStart()
+            else -> binding.content.motionLayout.transitionToEnd()
         }
     }
 
