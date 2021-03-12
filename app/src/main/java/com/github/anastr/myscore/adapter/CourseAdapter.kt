@@ -5,22 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.github.anastr.myscore.CourseListFragmentDirections
+import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.ItemCourseBinding
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.util.rapidClickListener
 import java.util.*
 
-class CourseAdapter(
-    private val listener: CourseAdapterListener,
-): ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback) {
-
-    interface CourseAdapterListener {
-        fun onClickCourse(course: Course)
-    }
+class CourseAdapter : ListAdapter<Course, CourseAdapter.CourseViewHolder>(CourseDiffCallback) {
 
     var passDegree = 0
         set(value) {
@@ -74,7 +71,9 @@ class CourseAdapter(
             ViewCompat.setBackgroundTintList(binding.totalTextView, ContextCompat.getColorStateList(binding.root.context, backColor))
 
             binding.root.rapidClickListener {
-                listener.onClickCourse(course)
+                val action = CourseListFragmentDirections.actionCourseListFragmentToCourseDialog(
+                    CourseMode.Edit(course.uid))
+                Navigation.findNavController(binding.root).navigate(action)
             }
         }
 

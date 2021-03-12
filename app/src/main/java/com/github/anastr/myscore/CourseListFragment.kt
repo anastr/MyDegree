@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
-import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.util.MAX_COURSES
 import com.github.anastr.myscore.util.hideFab
 import com.github.anastr.myscore.util.showFab
@@ -24,7 +22,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
+class CourseListFragment : Fragment() {
 
     private var _binding: FragmentCourseListBinding? = null
     private val binding get() =_binding!!
@@ -37,7 +35,7 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
         coursesViewModelFactory.provideFactory(args.yearId, args.semester)
     }
 
-    private val courseAdapter = CourseAdapter(this)
+    private val courseAdapter = CourseAdapter()
 
     private val fab: FloatingActionButton by lazy { requireActivity().findViewById(R.id.fab) }
 
@@ -89,11 +87,6 @@ class CourseListFragment : Fragment(), CourseAdapter.CourseAdapterListener {
             else
                 binding.textNoData.visibility = View.GONE
         }
-    }
-
-    override fun onClickCourse(course: Course) {
-        val action = CourseListFragmentDirections.actionCourseListFragmentToCourseDialog(CourseMode.Edit(course.uid))
-        Navigation.findNavController(requireView()).navigate(action)
     }
 
     override fun onDestroyView() {
