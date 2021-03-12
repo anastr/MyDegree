@@ -1,11 +1,11 @@
 package com.github.anastr.myscore.room.view
 
-import androidx.recyclerview.widget.DiffUtil
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import com.github.anastr.myscore.room.entity.Year
 
 data class YearWithSemester(
-    @ColumnInfo(name = "uid") val uid: Long = 0,
-    @ColumnInfo(name = "year_order") var order: Int,
+    @Embedded val year: Year,
     @ColumnInfo(name = "semester1Score") val semester1Score: Float = 0f,
     @ColumnInfo(name = "semester2Score") val semester2Score: Float = 0f,
 ) {
@@ -17,9 +17,4 @@ data class YearWithSemester(
             else
                 sum / 2f
         }
-}
-
-object YearWithSemesterDiffCallback : DiffUtil.ItemCallback<YearWithSemester>() {
-    override fun areItemsTheSame(oldItem: YearWithSemester, newItem: YearWithSemester) = oldItem.uid == newItem.uid
-    override fun areContentsTheSame(oldItem: YearWithSemester, newItem: YearWithSemester) = oldItem == newItem
 }

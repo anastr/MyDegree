@@ -41,8 +41,7 @@ class MainViewModel @Inject constructor(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val firebaseStateFlow: Flow<FirebaseState> =
-        _firebaseStateFlow
-            .onEach { _loadingLiveData.value = false }
+        _firebaseStateFlow.onEach { _loadingLiveData.value = false }
 
     val themeLiveData: LiveData<String> =
         sharedPreferences.stringLiveData("themePref", "-1")

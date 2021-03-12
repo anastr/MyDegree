@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.ItemCourseBinding
 import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.CourseDiffCallback
 import com.github.anastr.myscore.util.rapidClickListener
 import java.util.*
 
@@ -79,4 +79,9 @@ class CourseAdapter(
         }
 
     }
+}
+
+object CourseDiffCallback : DiffUtil.ItemCallback<Course>() {
+    override fun areItemsTheSame(oldItem: Course, newItem: Course) = oldItem.uid == newItem.uid
+    override fun areContentsTheSame(oldItem: Course, newItem: Course) = oldItem == newItem
 }

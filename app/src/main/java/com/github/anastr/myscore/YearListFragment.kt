@@ -90,8 +90,8 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
 
     override fun onClickSemester(yearWithSemester: YearWithSemester, semester: Semester) {
         navigateToDegrees(
-            yearPosition = yearWithSemester.order,
-            yearId = yearWithSemester.uid,
+            yearPosition = yearWithSemester.year.order,
+            yearId = yearWithSemester.year.uid,
             semester = semester,
         )
     }

@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CourseDao: BaseDao<Course> {
 
-    @Query("SELECT * FROM course WHERE uid = (:subjectId)")
-    fun getById(subjectId: Long): Flow<Course?>
+    @Query("SELECT * FROM course WHERE uid = :courseId LIMIT 1")
+    fun getById(courseId: Long): Flow<Course?>
 
     @Query("SELECT * FROM course WHERE year_id = (:yearId) AND semester = (:semester)")
     fun getAll(yearId: Long, semester: Semester): Flow<List<Course>>
 
-//    @Query("SELECT * FROM subject WHERE uid IN (:subjectIds)")
-//    fun loadAllByIds(subjectIds: LongArray): List<Subject>
+//    @Query("SELECT * FROM course WHERE uid IN (:courseIds)")
+//    fun loadAllByIds(courseIds: LongArray): Flow<List<Course>>
 
 }

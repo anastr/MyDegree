@@ -12,7 +12,7 @@ class YearsDiffUtil(
     override fun getNewListSize(): Int = newList.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].uid == newList[newItemPosition].uid
+        return oldList[oldItemPosition].year.uid == newList[newItemPosition].year.uid
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

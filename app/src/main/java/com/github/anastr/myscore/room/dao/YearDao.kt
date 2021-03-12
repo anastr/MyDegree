@@ -15,9 +15,9 @@ interface YearDao: BaseDao<Year> {
     @Query(
         """
         SELECT year.uid, year.year_order, 
-            AVG(CASE WHEN course.semester=0 AND course.theoretical_score + course.practical_score >= :passDegree
+            AVG(CASE WHEN course.semester = 0 AND course.theoretical_score + course.practical_score >= :passDegree
                 THEN course.practical_score + course.theoretical_score END) AS semester1Score, 
-            AVG(CASE WHEN course.semester=1 AND course.theoretical_score + course.practical_score >= :passDegree
+            AVG(CASE WHEN course.semester = 1 AND course.theoretical_score + course.practical_score >= :passDegree
                 THEN course.practical_score + course.theoretical_score END) AS semester2Score 
             FROM year 
             LEFT JOIN course ON year.uid = course.year_id 

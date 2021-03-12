@@ -56,11 +56,11 @@ class YearAdapter(
     }
 
     override fun onItemMoved() {
-        listener.onYearItemMoved(years.mapIndexed { index, item -> Year(uid = item.uid, order = index) })
+        listener.onYearItemMoved(years.mapIndexed { index, item -> Year(uid = item.year.uid, order = index) })
     }
 
     override fun onItemSwiped(position: Int) {
-        listener.onYearItemSwiped(years[position].let { Year(uid = it.uid, order = it.order) })
+        listener.onYearItemSwiped(years[position].let { Year(uid = it.year.uid, order = it.year.order) })
         notifyItemChanged(position)
     }
 
@@ -76,7 +76,7 @@ class YearAdapter(
         }
 
         fun bind(yearItem: YearWithSemester) {
-            binding.yearTextView.setText(yearsRec[yearItem.order])
+            binding.yearTextView.setText(yearsRec[yearItem.year.order])
 
             binding.scoreSemester1TextView.text = yearItem.semester1Score.formattedScore()
             binding.scoreSemester2TextView.text = yearItem.semester2Score.formattedScore()
