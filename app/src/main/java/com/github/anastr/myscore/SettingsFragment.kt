@@ -55,9 +55,6 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<CheckBoxPreference>("syncFirestoreData")
             ?.setOnPreferenceChangeListener { _, newValue ->
-                if (mainViewModel.loadingLiveData.value == true) {
-                    return@setOnPreferenceChangeListener false
-                }
                 if (FirebaseAuth.getInstance().currentUser == null) {
                     (requireActivity() as MainActivity).registerWithGoogle()
                     return@setOnPreferenceChangeListener false
