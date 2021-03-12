@@ -49,7 +49,7 @@
 
     <!-- General Preferences -->
     <string name="general_header">عام</string>
-    <string name="sync_header">مزامنة البيانات</string>
+    <string name="backup_header">النسخة الاحتياطية</string>
     <string name="pass_degree">علامة النجاح</string>
     <string name="theme">Theme</string>
     <string name="enable_auto_sync">تمكين المزامنة التلقائية</string>

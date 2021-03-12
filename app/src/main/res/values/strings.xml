@@ -49,7 +49,7 @@
 
     <!-- General Preferences -->
     <string name="general_header">General</string>
-    <string name="sync_header">Sync data</string>
+    <string name="backup_header">Backup data</string>
     <string name="pass_degree">Pass degree</string>
     <string name="theme">Theme</string>
     <string name="enable_auto_sync">Enable auto-sync</string>

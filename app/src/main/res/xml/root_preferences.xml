@@ -23,7 +23,7 @@
 
     <PreferenceCategory
         app:allowDividerAbove="true"
-        app:title="@string/sync_header"
+        app:title="@string/backup_header"
         app:iconSpaceReserved="false" >
 
         <CheckBoxPreference
