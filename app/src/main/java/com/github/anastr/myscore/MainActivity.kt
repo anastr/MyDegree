@@ -165,7 +165,6 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.chart_page_fragment -> {
                 binding.content.fab.hide()
-                currentYearId = -1L
             }
             R.id.courseListFragment -> {
                 if (arguments == null) {
@@ -174,9 +173,6 @@ class MainActivity : AppCompatActivity(),
                     currentYearId = CourseListFragmentArgs.fromBundle(arguments).yearId
                     currentSemester = CourseListFragmentArgs.fromBundle(arguments).semester
                 }
-            }
-            R.id.courseDialog -> {
-                currentYearId = -1L
             }
         }
     }
