@@ -37,7 +37,7 @@ object AppModule {
             = appDatabase.yearDao()
 
     @Provides
-    fun provideSubjectDao(appDatabase: AppDatabase): CourseDao
+    fun provideCourseDao(appDatabase: AppDatabase): CourseDao
             = appDatabase.courseDao()
 
     @Provides

@@ -29,7 +29,7 @@ interface DatabaseDao {
     @Transaction
     suspend fun deleteYear(year: Year) {
         deleteYear(year.uid)
-        deleteSubjects(year.uid)
+        deleteCourse(year.uid)
         val years = getAllYears()
         years.forEachIndexed { index, y -> y.order = index }
         updateAll(*years.toTypedArray())
@@ -42,7 +42,7 @@ interface DatabaseDao {
     suspend fun deleteYear(yearId: Long)
 
     @Query("DELETE FROM course WHERE year_id = :yearId")
-    suspend fun deleteSubjects(yearId: Long)
+    suspend fun deleteCourse(yearId: Long)
 
     @Transaction
     suspend fun deleteAll() {
