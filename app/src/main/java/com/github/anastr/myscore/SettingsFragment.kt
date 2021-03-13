@@ -95,7 +95,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
                         .setPositiveButton(R.string.delete) { _, _ ->
                             mainViewModel.deleteBackup()
                         }
-                        .setNegativeButton(R.string.cancel) { _, _ -> }
+                        .setNegativeButton(R.string.cancel, null)
                         .show()
                 }
                 true

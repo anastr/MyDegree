@@ -10,12 +10,9 @@ import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.util.MAX_COURSES
-import com.github.anastr.myscore.util.hideFab
-import com.github.anastr.myscore.util.showFab
 import com.github.anastr.myscore.viewmodel.CoursesViewModel
 import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
 import com.github.anastr.myscore.viewmodel.provideFactory
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -37,7 +34,7 @@ class CourseListFragment : Fragment() {
 
     private val courseAdapter = CourseAdapter()
 
-    private val fab: FloatingActionButton by lazy { requireActivity().findViewById(R.id.fab) }
+    private val mainActivity: MainActivity? get() = (requireActivity() as? MainActivity)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,15 +74,12 @@ class CourseListFragment : Fragment() {
         }
         coursesViewModel.courses.observe(viewLifecycleOwner) { list ->
             if (list.size >= MAX_COURSES)
-                fab.hideFab()
+                mainActivity?.hideFab()
             else
-                fab.showFab()
+                mainActivity?.showFab()
             courseAdapter.submitList(list)
             binding.progressBar.visibility = View.GONE
-            if (list.isEmpty())
-                binding.textNoData.visibility = View.VISIBLE
-            else
-                binding.textNoData.visibility = View.GONE
+            binding.textNoData.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

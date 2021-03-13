@@ -16,7 +16,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.room.entity.Semester
-import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.ErrorCode
 import com.github.anastr.myscore.viewmodel.FirebaseState
@@ -36,8 +35,6 @@ class MainActivity : AppCompatActivity(),
     NavController.OnDestinationChangedListener {
 
     private lateinit var binding: ActivityMainBinding
-
-    private var yearsCount = 0
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -71,15 +68,9 @@ class MainActivity : AppCompatActivity(),
             )
         }
 
-        mainViewModel.yearsCount.observe(this) {
-            yearsCount = it
-            manageFabVisibility()
-        }
-
         binding.content.fab.rapidClickListener {
             if (currentYearId == -1L) {
-                if (yearsCount < MAX_YEARS)
-                    mainViewModel.insertYears(Year(order = yearsCount))
+                mainViewModel.insertNewYear()
             }
             else {
                 val action = CourseListFragmentDirections.actionCourseListFragmentToCourseDialog(
@@ -107,10 +98,14 @@ class MainActivity : AppCompatActivity(),
         )
 
         mainViewModel.loadingLiveData.observe(this) { isLoading ->
-            if (isLoading)
-                showProgress()
-            else
-                hideProgress()
+            if (isLoading) {
+                loading = true
+                binding.progress.show()
+            }
+            else {
+                loading = false
+                binding.progress.hide()
+            }
         }
 
         lifecycleScope.launchWhenStarted {
@@ -124,7 +119,7 @@ class MainActivity : AppCompatActivity(),
                                     state.user.displayName
                                 )
                             )
-                            .setPositiveButton(R.string.ok) { _, _ -> }
+                            .setPositiveButton(R.string.ok, null)
                             .show()
                     }
                     is FirebaseState.Error -> {
@@ -135,7 +130,8 @@ class MainActivity : AppCompatActivity(),
                         showSnackBar(message)
                     }
                     is FirebaseState.FirestoreError -> {
-                        manageFirebaseError(state.exception)
+                        state.exception.printStackTrace()
+                        showSnackBar(getString(R.string.message_need_vpn))
                     }
                     FirebaseState.SendBackupSucceeded -> {
                         showSnackBar(getString(R.string.backup_saved_to_server), Snackbar.LENGTH_LONG)
@@ -160,18 +156,15 @@ class MainActivity : AppCompatActivity(),
         manageToolbar(destination)
         manageBottomBar(destination)
         when (destination.id) {
-            R.id.settingsFragment -> {
-                binding.content.fab.hideFab()
-            }
+            R.id.settingsFragment,
             R.id.aboutFragment -> {
-                binding.content.fab.hideFab()
+                binding.content.fab.hide()
             }
             R.id.year_page_fragment -> {
-                manageFabVisibility()
                 currentYearId = -1L
             }
             R.id.chart_page_fragment -> {
-                binding.content.fab.hideFab()
+                binding.content.fab.hide()
                 currentYearId = -1L
             }
             R.id.courseListFragment -> {
@@ -207,15 +200,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun manageFabVisibility() {
-        if (navController.currentDestination?.id == R.id.year_page_fragment) {
-            if (yearsCount >= MAX_YEARS)
-                binding.content.fab.hideFab()
-            else
-                binding.content.fab.showFab()
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -224,43 +208,21 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.sendBackup -> {
-                if (loading) {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.loading_in_progress),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return true
-                }
-                if (auth.currentUser == null) {
-                    registerWithGoogle()
-                } else {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(R.string.send_backup_warning_message)
-                        .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
-                        .setNegativeButton(R.string.cancel) { _, _ -> }
-                        .show()
-                }
+                if (isLoadingOrNotAuth()) return true
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.send_backup_warning_message)
+                    .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
+                    .setNegativeButton(R.string.cancel) { _, _ -> }
+                    .show()
                 return true
             }
             R.id.receiveBackup -> {
-                if (loading) {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.loading_in_progress),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return true
-                }
-                if (auth.currentUser == null) {
-                    registerWithGoogle()
-                } else {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(R.string.receive_data_warning_message)
-                        .setPositiveButton(R.string.receive) { _, _ -> mainViewModel.receiveBackup() }
-                        .setNegativeButton(R.string.cancel) { _, _ -> }
-                        .show()
-                }
+                if (isLoadingOrNotAuth()) return true
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.receive_data_warning_message)
+                    .setPositiveButton(R.string.receive) { _, _ -> mainViewModel.receiveBackup() }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
                 return true
             }
             else -> {
@@ -275,15 +237,26 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun isLoadingOrNotAuth(): Boolean {
+        if (loading) {
+            Toast.makeText(this, getString(R.string.loading_in_progress), Toast.LENGTH_SHORT)
+                .show()
+            return true
+        }
+        if (auth.currentUser == null) {
+            registerWithGoogle()
+            return true
+        }
+        return false
+    }
+
     fun registerWithGoogle() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestProfile()
             .build()
-
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -301,24 +274,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun manageFirebaseError(e: Exception) {
-        e.printStackTrace()
-//        val message = if (e.isError403())
-//            getString(R.string.message_need_vpn)
-//        else
-//            getString(R.string.message_failed_connect)
-        showSnackBar(getString(R.string.message_need_vpn))
-    }
+    fun hideFab() = binding.content.fab.hide()
 
-    private fun showProgress() {
-        loading = true
-        binding.progress.show()
-    }
-
-    private fun hideProgress() {
-        loading = false
-        binding.progress.hide()
-    }
+    fun showFab() = binding.content.fab.show()
 
     private fun showSnackBar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
         Snackbar.make(binding.content.fab, message, duration).show()

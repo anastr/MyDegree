@@ -37,7 +37,8 @@ class AboutFragment : Fragment() {
         binding.buttonLinkedIn.setOnClickListener { openUrl("https://linkedin.com/in/anas-altair") }
     }
 
-    private fun openUrl(url: String) = startActivity(Intent(Intent.ACTION_VIEW).apply { this.data = Uri.parse(url) })
+    private fun openUrl(url: String) =
+        startActivity(Intent(Intent.ACTION_VIEW).apply { this.data = Uri.parse(url) })
 
     override fun onDestroyView() {
         super.onDestroyView()

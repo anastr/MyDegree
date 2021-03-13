@@ -1,13 +1,15 @@
 package com.github.anastr.myscore.viewmodel
 
 import android.content.SharedPreferences
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.anastr.myscore.firebase.documents.DegreeDocument
 import com.github.anastr.myscore.firebase.toCourse
 import com.github.anastr.myscore.firebase.toHashMap
 import com.github.anastr.myscore.firebase.toYear
 import com.github.anastr.myscore.repository.DatabaseRepository
-import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.myscore.util.stringLiveData
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,11 +47,7 @@ class MainViewModel @Inject constructor(
     val themeLiveData: LiveData<String> =
         sharedPreferences.stringLiveData("themePref", "-1")
 
-    val yearsCount: LiveData<Int> = databaseRepository.getYearsCount()
-        .distinctUntilChanged()
-        .asLiveData()
-
-    fun insertYears(vararg years: Year) = viewModelScope.launch { databaseRepository.insertAll(*years) }
+    fun insertNewYear() = viewModelScope.launch { databaseRepository.insertNewYear() }
 
     fun firebaseAuthWithGoogle(idToken: String) {
         _loadingLiveData.value = true

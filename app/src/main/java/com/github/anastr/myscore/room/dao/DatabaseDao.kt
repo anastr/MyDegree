@@ -3,7 +3,6 @@ package com.github.anastr.myscore.room.dao
 import androidx.room.*
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Year
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DatabaseDao {
@@ -11,14 +10,18 @@ interface DatabaseDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg data: Year)
 
+    @Query("""
+        INSERT INTO year (year_order)
+        SELECT (SELECT COUNT() FROM year)
+        WHERE NOT EXISTS (SELECT 1 FROM year WHERE year_order = :maxYears - 1);
+    """)
+    suspend fun insertNewYear(maxYears: Int)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg data: Course)
 
     @Query("SELECT * FROM year ORDER BY year_order ASC")
     suspend fun getAllYears(): List<Year>
-
-    @Query("SELECT COUNT() FROM year")
-    fun getYearsCount(): Flow<Int>
 
     @Query("SELECT * FROM course")
     suspend fun getAllCourses(): List<Course>

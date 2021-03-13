@@ -14,6 +14,7 @@ import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
 import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.myscore.util.MAX_YEARS
 import com.github.anastr.myscore.util.drag.DragItemTouchHelper
 import com.github.anastr.myscore.util.swipe.SwipeItemTouchHelper
 import com.github.anastr.myscore.viewmodel.YearViewModel
@@ -22,9 +23,6 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 @AndroidEntryPoint
 class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
 
@@ -34,6 +32,8 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
     private lateinit var yearAdapter: YearAdapter
 
     private val yearViewModel: YearViewModel by activityViewModels()
+
+    private val mainActivity: MainActivity? get() = (requireActivity() as? MainActivity)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +64,10 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
         }
 
         yearViewModel.years.observe(viewLifecycleOwner) { newList ->
+            if (newList.size >= MAX_YEARS)
+                mainActivity?.hideFab()
+            else
+                mainActivity?.showFab()
             yearAdapter.updateData(newList)
             binding.progressBar.visibility = View.GONE
             if (newList.isEmpty())
@@ -103,12 +107,9 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
     override fun onYearItemSwiped(year: Year) {
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(R.string.delete_year_message)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setPositiveButton(R.string.delete) { dialog, _ ->
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
                 yearViewModel.deleteYear(year.let { Year(uid = it.uid, order = it.order) })
-                dialog.dismiss()
             }
             .show()
     }

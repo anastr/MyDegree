@@ -42,9 +42,15 @@ class CourseDialog: DialogFragment() {
     private val inputName: String
         get() = binding.nameEditText.text.toString().trim()
     private val inputTheoreticalDegree: Int
-        get() = if (binding.theoreticalCheckBox.isChecked) binding.theoreticalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
+        get() =
+            if (binding.theoreticalCheckBox.isChecked)
+                binding.theoreticalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0
+            else 0
     private val inputPracticalDegree: Int
-        get() = if (binding.practicalCheckBox.isChecked) binding.practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0 else 0
+        get() =
+            if (binding.practicalCheckBox.isChecked)
+                binding.practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0
+            else 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -107,13 +113,10 @@ class CourseDialog: DialogFragment() {
     private fun delete() {
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(R.string._new)
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setPositiveButton(R.string.delete) { dialog, _ ->
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
                 try {
                     courseViewModel.deleteCourse(course)
-                    dialog.dismiss()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
