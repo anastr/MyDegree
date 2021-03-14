@@ -19,7 +19,7 @@ FInd the app on Google-Play:\
   * [AndroidX Preference library](https://developer.android.com/guide/topics/ui/settings).
   * [Workmanager](https://developer.android.com/topic/libraries/architecture/workmanager) to add default data to database on created and schedule auto-upload backup.
 * [Firebase](https://firebase.google.com/docs/android/setup) to upload and save backups.
-* [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) for dependency injection.
+* [Hilt](https://dagger.dev/hilt/) for dependency injection.
 * [Material components library](https://github.com/material-components/material-components-android).
 * [RxJava](https://github.com/ReactiveX/RxJava) to handle rapid-clicks.
 * [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) to display years degree.
