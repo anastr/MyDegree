@@ -7,17 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.myscore.firebase.documents.DegreeDocument
 import com.github.anastr.myscore.firebase.toCourse
-import com.github.anastr.myscore.firebase.toHashMap
 import com.github.anastr.myscore.firebase.toYear
 import com.github.anastr.myscore.repository.DatabaseRepository
-import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
+import com.github.anastr.myscore.repository.FirebaseRepository
 import com.github.anastr.myscore.util.stringLiveData
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.Source
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -30,9 +24,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     sharedPreferences: SharedPreferences,
     private val databaseRepository: DatabaseRepository,
+    private val firebaseRepository: FirebaseRepository,
 ): ViewModel() {
-
-    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private val _loadingLiveData = MutableLiveData(false)
     val loadingLiveData: LiveData<Boolean> = _loadingLiveData
@@ -51,60 +44,47 @@ class MainViewModel @Inject constructor(
 
     fun firebaseAuthWithGoogle(idToken: String) {
         _loadingLiveData.value = true
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnSuccessListener {
-                val user = auth.currentUser
-                _firebaseStateFlow.tryEmit(FirebaseState.GoogleLoginSucceeded(user!!))
+        viewModelScope.launch {
+            try {
+                val user = firebaseRepository.firebaseAuthWithGoogle(idToken)
+                _firebaseStateFlow.tryEmit(FirebaseState.GoogleLoginSucceeded(user))
             }
-            .addOnFailureListener { e ->
+            catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
+        }
     }
 
     fun sendBackup() {
         _loadingLiveData.value = true
         viewModelScope.launch {
-            val db = Firebase.firestore
             val years = databaseRepository.getYears()
             val courses = databaseRepository.getCourses()
-            val degreeDocument = DegreeDocument().apply {
-                this.years = years.map { it.toHashMap() }
-                this.courses = courses.map { it.toHashMap() }
+            try {
+                firebaseRepository.sendBackup(years = years, courses = courses)
+                _firebaseStateFlow.tryEmit(FirebaseState.SendBackupSucceeded)
             }
-            val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-            db.runTransaction { transaction ->
-                transaction.set(docRef, degreeDocument)
+            catch (e: Exception) {
+                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
-                .addOnSuccessListener {
-                    _firebaseStateFlow.tryEmit(FirebaseState.SendBackupSucceeded)
-                }
-                .addOnFailureListener { e ->
-                    _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-                }
         }
     }
 
     fun receiveBackup() {
         _loadingLiveData.value = true
-        val db = Firebase.firestore
-        val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-        docRef.get(Source.SERVER).addOnSuccessListener { documentSnapshot ->
+        viewModelScope.launch {
             try {
+                val documentSnapshot = firebaseRepository.receiveBackup()
                 if (documentSnapshot.exists()) {
                     val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
                     saveDataFromFireStore(degreeDocument!!)
                 } else {
                     _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.NoDataOnServer))
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
-            }
-        }
-            .addOnFailureListener { e ->
+            } catch (e:Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
+        }
     }
 
     private fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
@@ -125,18 +105,13 @@ class MainViewModel @Inject constructor(
     fun deleteBackup() {
         _loadingLiveData.value = true
         viewModelScope.launch {
-            val db = Firebase.firestore
-            val docRef =
-                db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-            db.runTransaction { transaction ->
-                transaction.delete(docRef)
+            try {
+                firebaseRepository.deleteBackup()
+                _firebaseStateFlow.tryEmit(FirebaseState.DeleteBackupSucceeded)
             }
-                .addOnSuccessListener {
-                    _firebaseStateFlow.tryEmit(FirebaseState.DeleteBackupSucceeded)
-                }
-                .addOnFailureListener { e ->
-                    _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-                }
+            catch (e: Exception) {
+                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
+            }
         }
     }
 }

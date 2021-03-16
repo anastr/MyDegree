@@ -8,7 +8,7 @@ import com.github.anastr.myscore.firebase.documents.DegreeDocument
 import com.github.anastr.myscore.firebase.toHashMap
 import com.github.anastr.myscore.room.AppDatabase
 import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
-import com.google.android.gms.tasks.Tasks
+import com.github.anastr.myscore.util.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -34,12 +34,9 @@ class UploadBackupWorker(
                 val db = Firebase.firestore
                 val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION)
                     .document(auth.currentUser!!.uid)
-                @Suppress("BlockingMethodInNonBlockingContext")
-                Tasks.await(
-                    db.runTransaction { transaction ->
-                        transaction.set(docRef, degreeDocument)
-                    }
-                )
+                db.runTransaction { transaction ->
+                    transaction.set(docRef, degreeDocument)
+                }.await()
                 Log.i(Tag, "Succeeded")
                 Result.success()
             }
