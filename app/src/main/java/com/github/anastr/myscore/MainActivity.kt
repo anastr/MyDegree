@@ -1,6 +1,5 @@
 package com.github.anastr.myscore
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -15,13 +14,13 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.github.anastr.myscore.databinding.ActivityMainBinding
+import com.github.anastr.myscore.firebase.GoogleSignInContent
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.ErrorCode
 import com.github.anastr.myscore.viewmodel.FirebaseState
 import com.github.anastr.myscore.viewmodel.MainViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -51,6 +50,19 @@ class MainActivity : AppCompatActivity(),
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     private var loading = false
+
+    private val googleSignInLauncher = registerForActivityResult(GoogleSignInContent()) { result ->
+        result?.let {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                mainViewModel.firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                showSnackBar(getString(R.string.google_signin_failed))
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -247,27 +259,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     fun registerWithGoogle() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestProfile()
-            .build()
-        val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Result returned from launching the Intent from googleSignInClient.signInIntent
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                mainViewModel.firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                showSnackBar(getString(R.string.google_signin_failed))
-            }
-        }
+        googleSignInLauncher.launch(0)
     }
 
     fun hideFab() = binding.content.fab.hide()
@@ -276,9 +268,5 @@ class MainActivity : AppCompatActivity(),
 
     private fun showSnackBar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
         Snackbar.make(binding.content.fab, message, duration).show()
-    }
-
-    companion object {
-        const val RC_SIGN_IN = 101
     }
 }
