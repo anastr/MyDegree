@@ -3,6 +3,10 @@ package com.github.anastr.myscore.firebase
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.myscore.util.getBoolean
+import com.github.anastr.myscore.util.getInt
+import com.github.anastr.myscore.util.getLong
+import com.github.anastr.myscore.util.getString
 
 fun Year.toHashMap(): HashMap<String, Any> = hashMapOf(
     "uid" to uid,
@@ -10,8 +14,8 @@ fun Year.toHashMap(): HashMap<String, Any> = hashMapOf(
 )
 
 fun HashMap<String, Any>.toYear(): Year = Year(
-    uid = get("uid") as Long,
-    order = (get("year_order") as Long).toInt(),
+    uid = getLong("uid"),
+    order = getInt("year_order"),
 )
 
 fun Course.toHashMap(): HashMap<String, Any> = hashMapOf(
@@ -26,12 +30,12 @@ fun Course.toHashMap(): HashMap<String, Any> = hashMapOf(
 )
 
 fun HashMap<String, Any>.toCourse(): Course = Course(
-    uid = get("uid") as Long,
-    yearId = get("year_id") as Long,
-    semester = Semester.byOrder((get("semester") as Long).toInt()),
-    name = get("name") as String,
-    hasPractical = get("has_practical") as Boolean,
-    hasTheoretical = get("has_theoretical") as Boolean,
-    practicalScore = (get("practical_score") as Long).toInt(),
-    theoreticalScore = (get("theoretical_score") as Long).toInt(),
+    uid = getLong("uid"),
+    yearId = getLong("year_id"),
+    semester = Semester.byOrder(getInt("semester")),
+    name = getString("name"),
+    hasPractical = getBoolean("has_practical"),
+    hasTheoretical = getBoolean("has_theoretical"),
+    practicalScore = getInt("practical_score"),
+    theoreticalScore = getInt("theoretical_score"),
 )

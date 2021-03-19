@@ -22,6 +22,11 @@ fun <T> MutableList<T>.swap(i1: Int, i2: Int) {
 @WorkerThread
 fun <TResult> Task<TResult>.await(): TResult = Tasks.await(this)
 
+fun HashMap<String, Any>.getString(key: String) = get(key) as String
+fun HashMap<String, Any>.getBoolean(key: String) = get(key) as Boolean
+fun HashMap<String, Any>.getInt(key: String) = (get(key) as Number).toInt()
+fun HashMap<String, Any>.getLong(key: String) = (get(key) as Number).toLong()
+
 fun Exception.isError403() =
     message == "UNAUTHENTICATED" ||
         message?.contains("Error 403 (Forbidden)") == true
