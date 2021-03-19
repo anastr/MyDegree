@@ -20,6 +20,9 @@ class AboutFragment : Fragment() {
         enterTransition = MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
         }
+        exitTransition = MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
+        }
     }
 
     override fun onCreateView(

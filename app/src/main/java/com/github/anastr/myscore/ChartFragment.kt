@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.anastr.myscore.databinding.FragmentChartBinding
@@ -35,6 +36,9 @@ class ChartFragment : Fragment() {
         enterTransition = MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
         }
+        exitTransition = MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
+        }
     }
 
     override fun onCreateView(
@@ -42,6 +46,7 @@ class ChartFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentChartBinding.inflate(inflater, container, false)
+        ViewGroupCompat.setTransitionGroup(binding.root, true)
         return binding.root
     }
 

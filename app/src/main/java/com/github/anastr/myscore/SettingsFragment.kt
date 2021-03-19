@@ -2,6 +2,8 @@ package com.github.anastr.myscore
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.preference.CheckBoxPreference
@@ -32,6 +34,9 @@ class SettingsFragment: PreferenceFragmentCompat() {
         enterTransition = MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
         }
+        exitTransition = MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -39,6 +44,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        ViewGroupCompat.setTransitionGroup(view as ViewGroup, true)
         super.onViewCreated(view, savedInstanceState)
         preferenceManager.findPreference<ListPreference>("themePref")
             ?.setOnPreferenceChangeListener { _, newValue ->
@@ -112,6 +118,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         // If it was one of our custom Preferences, show its dialog
         dialogFragment?.let {
+            @Suppress("DEPRECATION")
             dialogFragment.setTargetFragment(this, 0)
             dialogFragment.show(
                 parentFragmentManager,

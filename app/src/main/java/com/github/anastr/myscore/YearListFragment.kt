@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.github.anastr.myscore.adapter.YearAdapter
 import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.room.entity.Semester
@@ -40,6 +40,9 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
         enterTransition = MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
         }
+        exitTransition = MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
+        }
     }
 
     override fun onCreateView(
@@ -47,6 +50,7 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentYearListBinding.inflate(inflater, container, false)
+        ViewGroupCompat.setTransitionGroup(binding.root, true)
         return binding.root
     }
 
@@ -56,7 +60,7 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
         yearAdapter = YearAdapter(this)
         val itemTouchHelper = ItemTouchHelper(DragItemTouchHelper(yearAdapter))
         val swipeTouchHelper = ItemTouchHelper(SwipeItemTouchHelper(yearAdapter))
-        view.findViewById<RecyclerView>(R.id.recycler_view).apply {
+        binding.recyclerView.apply {
             itemTouchHelper.attachToRecyclerView(this)
             swipeTouchHelper.attachToRecyclerView(this)
             setHasFixedSize(true)

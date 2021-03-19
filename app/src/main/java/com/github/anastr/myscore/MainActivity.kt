@@ -7,12 +7,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.firebase.GoogleSignInContent
 import com.github.anastr.myscore.room.entity.Semester
@@ -24,7 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialFadeThrough
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -41,11 +42,6 @@ class MainActivity : AppCompatActivity(),
     private var currentSemester: Semester = Semester.FirstSemester
 
     private val navController get() = findNavController(R.id.nav_host_fragment)
-    private val currentNavigationFragment: Fragment?
-        get() = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-            ?.childFragmentManager
-            ?.fragments
-            ?.first()
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
@@ -95,16 +91,12 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        NavigationUI.setupWithNavController(binding.toolbar, navController)
-        binding.content.bottomNavigation.setOnNavigationItemSelectedListener { item ->
-            currentNavigationFragment?.apply {
-                exitTransition = MaterialFadeThrough().apply {
-                    duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
-                }
-                reenterTransition = exitTransition
-            }
-            NavigationUI.onNavDestinationSelected(item, navController)
-        }
+        setupActionBarWithNavController(
+            navController, AppBarConfiguration(
+                topLevelDestinationIds = setOf(R.id.year_page_fragment, R.id.chart_page_fragment),
+            )
+        )
+        binding.content.bottomNavigation.setupWithNavController(navController)
         navController.addOnDestinationChangedListener(
             this@MainActivity
         )
@@ -158,6 +150,10 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     override fun onDestinationChanged(
@@ -234,12 +230,6 @@ class MainActivity : AppCompatActivity(),
                 return true
             }
             else -> {
-                currentNavigationFragment?.apply {
-                    exitTransition = MaterialFadeThrough().apply {
-                        duration = resources.getInteger(R.integer.motion_duration_medium).toLong()
-                    }
-                    reenterTransition = exitTransition
-                }
                 NavigationUI.onNavDestinationSelected(item, navController)
             }
         }
