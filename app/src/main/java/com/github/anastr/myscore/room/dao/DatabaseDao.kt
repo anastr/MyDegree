@@ -35,6 +35,13 @@ interface DatabaseDao {
         updateAll(*years.toTypedArray())
     }
 
+    @Transaction
+    suspend fun replaceData(years: List<Year>, courses: List<Course>) {
+        deleteAll()
+        insertAll(*years.toTypedArray())
+        insertAll(*courses.toTypedArray())
+    }
+
     @Update
     suspend fun updateAll(vararg years: Year)
 
@@ -45,7 +52,7 @@ interface DatabaseDao {
     suspend fun deleteCourse(yearId: Long)
 
     @Transaction
-    suspend fun deleteAll() {
+    private suspend fun deleteAll() {
         deleteAllYears()
         deleteAllCourses()
     }

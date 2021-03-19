@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.myscore.firebase.documents.DegreeDocument
-import com.github.anastr.myscore.firebase.toCourse
-import com.github.anastr.myscore.firebase.toYear
 import com.github.anastr.myscore.repository.DatabaseRepository
 import com.github.anastr.myscore.repository.FirebaseRepository
 import com.github.anastr.myscore.util.stringLiveData
@@ -89,16 +87,13 @@ class MainViewModel @Inject constructor(
 
     private fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
         viewModelScope.launch {
-            databaseRepository.deleteAll()
-            if (degreeDocument.years != null) {
-                val years = degreeDocument.years!!.map { it.toYear() }
-                databaseRepository.insertAll(*years.toTypedArray())
+            try {
+                databaseRepository.replaceData(degreeDocument)
+                _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
             }
-            if (degreeDocument.courses != null) {
-                val courses = degreeDocument.courses!!.map { it.toCourse() }
-                databaseRepository.insertAll(*courses.toTypedArray())
+            catch (e: Exception) {
+                _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
             }
-            _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
         }
     }
 

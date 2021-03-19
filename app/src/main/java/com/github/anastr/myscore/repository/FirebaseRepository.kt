@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -53,7 +52,7 @@ class FirebaseRepository @Inject constructor (
         return withContext(defaultDispatcher) {
             val db = Firebase.firestore
             val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-            docRef.get(Source.SERVER).await()
+            docRef.get().await()
         }
     }
 
@@ -61,8 +60,7 @@ class FirebaseRepository @Inject constructor (
     suspend fun deleteBackup() {
         return withContext(defaultDispatcher) {
             val db = Firebase.firestore
-            val docRef =
-                db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
+            val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
             db.runTransaction { transaction ->
                 transaction.delete(docRef)
             }.await()
