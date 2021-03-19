@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -15,7 +16,6 @@ import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
 import com.github.anastr.myscore.viewmodel.provideFactory
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,13 +44,6 @@ class CourseListFragment : Fragment() {
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
             duration = resources.getInteger(R.integer.motion_duration_large).toLong()
         }
-
-        requireActivity().title =
-            String.format(Locale.ENGLISH,
-                requireContext().getString(R.string.title_courses),
-                args.yearPosition+1,
-                args.semester.position+1,
-            )
     }
 
     override fun onCreateView(
@@ -58,6 +51,7 @@ class CourseListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCourseListBinding.inflate(inflater, container, false)
+        ViewGroupCompat.setTransitionGroup(binding.root, true)
         return binding.root
     }
 

@@ -24,13 +24,14 @@
     <fragment
         android:id="@+id/courseListFragment"
         android:name="com.github.anastr.myscore.CourseListFragment"
+        android:label="{title}"
         tools:layout="@layout/fragment_course_list" >
         <action
             android:id="@+id/action_courseListFragment_to_courseDialog"
             app:destination="@id/courseDialog" />
         <argument
-            android:name="yearPosition"
-            app:argType="integer" />
+            android:name="title"
+            app:argType="string" />
         <argument
             android:name="yearId"
             app:argType="long" />

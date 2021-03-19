@@ -91,7 +91,7 @@ class ChartFragment : Fragment() {
 
         val yAxis = binding.chartYears.yAxis
         yAxis.axisMinimum = 0f
-        yAxis.axisMaximum = 80f
+        yAxis.axisMaximum = 100f
         yAxis.setDrawLabels(false)
         yAxis.textColor = requireContext().getColorFromAttr(R.attr.colorOnSurface)
 

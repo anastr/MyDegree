@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
@@ -161,18 +162,15 @@ class MainActivity : AppCompatActivity(),
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        manageToolbar(destination)
         manageBottomBar(destination)
         when (destination.id) {
+            R.id.chart_page_fragment,
             R.id.settingsFragment,
             R.id.aboutFragment -> {
                 binding.content.fab.hide()
             }
             R.id.year_page_fragment -> {
                 currentYearId = -1L
-            }
-            R.id.chart_page_fragment -> {
-                binding.content.fab.hide()
             }
             R.id.courseListFragment -> {
                 if (arguments == null) {
@@ -181,17 +179,6 @@ class MainActivity : AppCompatActivity(),
                     currentYearId = CourseListFragmentArgs.fromBundle(arguments).yearId
                     currentSemester = CourseListFragmentArgs.fromBundle(arguments).semester
                 }
-            }
-        }
-    }
-
-    private fun manageToolbar(destination: NavDestination) {
-        when (destination.id) {
-            R.id.settingsFragment,
-            R.id.aboutFragment,
-            R.id.year_page_fragment,
-            R.id.chart_page_fragment -> {
-                title = navController.currentDestination?.label
             }
         }
     }

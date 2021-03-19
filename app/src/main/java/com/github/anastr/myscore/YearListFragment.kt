@@ -22,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
@@ -83,7 +84,12 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
 
     private fun navigateToDegrees(yearPosition: Int, yearId: Long, semester: Semester) {
         val action = YearListFragmentDirections.actionYearPageFragmentToCourseListFragment(
-            yearPosition = yearPosition,
+            title = String.format(
+                Locale.ENGLISH,
+                getString(R.string.title_courses),
+                yearPosition + 1,
+                semester.position + 1,
+            ),
             yearId = yearId,
             semester = semester,
         )
