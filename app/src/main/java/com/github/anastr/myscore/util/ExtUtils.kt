@@ -1,5 +1,6 @@
 package com.github.anastr.myscore.util
 
+import androidx.annotation.WorkerThread
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import java.text.DecimalFormat
@@ -18,6 +19,7 @@ fun <T> MutableList<T>.swap(i1: Int, i2: Int) {
     this[i2] = tmp
 }
 
+@WorkerThread
 fun <TResult> Task<TResult>.await(): TResult = Tasks.await(this)
 
 fun Exception.isError403() =

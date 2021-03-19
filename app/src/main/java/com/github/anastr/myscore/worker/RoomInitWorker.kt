@@ -1,20 +1,25 @@
 package com.github.anastr.myscore.worker
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.github.anastr.myscore.room.AppDatabase
+import com.github.anastr.myscore.room.dao.YearDao
 import com.github.anastr.myscore.room.entity.Year
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
 
-class RoomInitWorker(
-    appContext: Context,
-    workerParams: WorkerParameters,
+@HiltWorker
+class RoomInitWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val yearDao: YearDao,
 ): CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            AppDatabase.getInstance(applicationContext).yearDao().insertAll(
+            yearDao.insertAll(
                 Year(order = 0),
                 Year(order = 1),
                 Year(order = 2),
