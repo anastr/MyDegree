@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity(),
                     .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
                     .setNegativeButton(R.string.cancel) { _, _ -> }
                     .show()
-                return true
+                true
             }
             R.id.receiveBackup -> {
                 if (isLoadingOrNotAuth()) return true
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity(),
                     .setPositiveButton(R.string.receive) { _, _ -> mainViewModel.receiveBackup() }
                     .setNegativeButton(R.string.cancel, null)
                     .show()
-                return true
+                true
             }
             else -> {
                 NavigationUI.onNavDestinationSelected(item, navController)

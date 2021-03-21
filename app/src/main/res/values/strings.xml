@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">My degree</string>
+    <string name="app_name">My degree</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
