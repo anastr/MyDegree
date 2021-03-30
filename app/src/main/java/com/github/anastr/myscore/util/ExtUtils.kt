@@ -13,10 +13,7 @@ fun Float.formattedScore(): String = DecimalFormat(
 ).format(this)
 
 fun <T> MutableList<T>.swap(i1: Int, i2: Int) {
-//    this[i1] = this[i2].also { this[i2] = this[i1] }
-    val tmp = this[i1]
-    this[i1] = this[i2]
-    this[i2] = tmp
+    this[i1] = this[i2].also { this[i2] = this[i1] }
 }
 
 @WorkerThread
