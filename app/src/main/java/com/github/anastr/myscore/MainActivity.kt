@@ -7,7 +7,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
-        lifecycleScope.launchWhenStarted {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             mainViewModel.firebaseStateFlow.collect { state ->
                 when (state) {
                     is FirebaseState.GoogleLoginSucceeded -> {
@@ -203,7 +204,7 @@ class MainActivity : AppCompatActivity(),
                 MaterialAlertDialogBuilder(this)
                     .setMessage(R.string.send_backup_warning_message)
                     .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
-                    .setNegativeButton(R.string.cancel) { _, _ -> }
+                    .setNegativeButton(R.string.cancel, null)
                     .show()
                 true
             }

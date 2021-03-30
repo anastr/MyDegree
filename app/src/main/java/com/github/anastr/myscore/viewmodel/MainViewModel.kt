@@ -14,7 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,8 +31,7 @@ class MainViewModel @Inject constructor(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
-    val firebaseStateFlow: Flow<FirebaseState> =
-        _firebaseStateFlow.onEach { _loadingLiveData.value = false }
+    val firebaseStateFlow: Flow<FirebaseState> = _firebaseStateFlow
 
     val themeLiveData: LiveData<String> =
         sharedPreferences.stringLiveData("themePref", "-1")
@@ -50,6 +48,9 @@ class MainViewModel @Inject constructor(
             catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
+            finally {
+                _loadingLiveData.value = false
+            }
         }
     }
 
@@ -64,6 +65,9 @@ class MainViewModel @Inject constructor(
             }
             catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
+            }
+            finally {
+                _loadingLiveData.value = false
             }
         }
     }
@@ -82,18 +86,19 @@ class MainViewModel @Inject constructor(
             } catch (e:Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
             }
+            finally {
+                _loadingLiveData.value = false
+            }
         }
     }
 
-    private fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
-        viewModelScope.launch {
-            try {
-                databaseRepository.replaceData(degreeDocument)
-                _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
-            }
-            catch (e: Exception) {
-                _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
-            }
+    private suspend fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
+        try {
+            databaseRepository.replaceData(degreeDocument)
+            _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
+        }
+        catch (e: Exception) {
+            _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
         }
     }
 
@@ -106,6 +111,9 @@ class MainViewModel @Inject constructor(
             }
             catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
+            }
+            finally {
+                _loadingLiveData.value = false
             }
         }
     }
