@@ -4,16 +4,18 @@ import androidx.lifecycle.*
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CourseViewModel @AssistedInject constructor(
+@HiltViewModel
+class CourseViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val courseRepository: CourseRepository,
-    @Assisted private val courseMode: CourseMode,
 ): ViewModel() {
+
+    val courseMode: CourseMode = savedStateHandle.get(COURSE_MODE_KEY)!!
 
     val course: LiveData<Course?> =
         when (courseMode) {
@@ -51,18 +53,7 @@ class CourseViewModel @AssistedInject constructor(
         }
     }
 
-}
-
-@AssistedFactory
-interface CourseViewModelFactory {
-    fun create(courseMode: CourseMode): CourseViewModel
-}
-
-fun CourseViewModelFactory.provideFactory(
-    courseMode: CourseMode,
-): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return create(courseMode) as T
+    companion object {
+        const val COURSE_MODE_KEY = "courseMode"
     }
 }

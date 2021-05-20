@@ -6,36 +6,26 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.databinding.DialogCourseBinding
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseViewModel
-import com.github.anastr.myscore.viewmodel.CourseViewModelFactory
-import com.github.anastr.myscore.viewmodel.provideFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
-import javax.inject.Inject
 
-sealed class CourseMode: Serializable {
-    class Edit(val courseId: Long): CourseMode()
+sealed class CourseMode : Serializable {
+    class Edit(val courseId: Long) : CourseMode()
     class New(val yearId: Long, val semester: Semester) : CourseMode()
 }
 
 @AndroidEntryPoint
-class CourseDialog: DialogFragment() {
+class CourseDialog : DialogFragment() {
 
     private lateinit var binding: DialogCourseBinding
 
-    private val args: CourseDialogArgs by navArgs()
-
-    @Inject
-    lateinit var courseViewModelFactory: CourseViewModelFactory
-    private val courseViewModel: CourseViewModel by viewModels {
-        courseViewModelFactory.provideFactory(args.courseMode)
-    }
+    private val courseViewModel: CourseViewModel by viewModels()
 
     private lateinit var course: Course
 
@@ -63,7 +53,7 @@ class CourseDialog: DialogFragment() {
             builder.apply {
                 setView(view)
                 setTitle(
-                    when (args.courseMode) {
+                    when (courseViewModel.courseMode) {
                         is CourseMode.New -> R.string._new
                         is CourseMode.Edit -> R.string.edit
                     }
@@ -85,7 +75,7 @@ class CourseDialog: DialogFragment() {
         binding.buttonCancel.rapidClickListener { dismiss() }
         binding.buttonSave.rapidClickListener { save() }
         binding.buttonDelete.apply {
-            visibility = if (args.courseMode is CourseMode.Edit) {
+            visibility = if (courseViewModel.courseMode is CourseMode.Edit) {
                 rapidClickListener { delete() }
                 View.VISIBLE
             } else {
@@ -103,8 +93,7 @@ class CourseDialog: DialogFragment() {
                     binding.practicalTextInput.editText?.setText(course.practicalScore.toString())
                 binding.theoreticalCheckBox.isChecked = course.hasTheoretical
                 binding.practicalCheckBox.isChecked = course.hasPractical
-            }
-            else {
+            } else {
                 dismiss()
             }
         }
@@ -134,7 +123,7 @@ class CourseDialog: DialogFragment() {
                 theoreticalScore = inputTheoreticalDegree
                 practicalScore = inputPracticalDegree
             }
-            when (args.courseMode) {
+            when (courseViewModel.courseMode) {
                 is CourseMode.New -> courseViewModel.insertCourse(course)
                 is CourseMode.Edit -> courseViewModel.updateCourse(course)
             }
@@ -153,11 +142,19 @@ class CourseDialog: DialogFragment() {
                 false
             }
             !binding.theoreticalCheckBox.isChecked && !binding.practicalCheckBox.isChecked -> {
-                Toast.makeText(activity, getString(R.string.one_degree_is_required), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    activity,
+                    getString(R.string.one_degree_is_required),
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
             inputTheoreticalDegree + inputPracticalDegree > 100 -> {
-                Toast.makeText(activity, getString(R.string.degree_should_be_smaller_than_100), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    activity,
+                    getString(R.string.degree_should_be_smaller_than_100),
+                    Toast.LENGTH_SHORT
+                ).show()
                 false
             }
             else -> true

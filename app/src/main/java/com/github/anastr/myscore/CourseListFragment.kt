@@ -7,16 +7,12 @@ import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.util.MAX_COURSES
 import com.github.anastr.myscore.viewmodel.CoursesViewModel
-import com.github.anastr.myscore.viewmodel.CoursesViewModelFactory
-import com.github.anastr.myscore.viewmodel.provideFactory
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CourseListFragment : Fragment() {
@@ -24,13 +20,7 @@ class CourseListFragment : Fragment() {
     private var _binding: FragmentCourseListBinding? = null
     private val binding get() =_binding!!
 
-    private val args: CourseListFragmentArgs by navArgs()
-
-    @Inject
-    lateinit var coursesViewModelFactory: CoursesViewModelFactory
-    private val coursesViewModel: CoursesViewModel by viewModels {
-        coursesViewModelFactory.provideFactory(args.yearId, args.semester)
-    }
+    private val coursesViewModel: CoursesViewModel by viewModels()
 
     private val courseAdapter = CourseAdapter()
 

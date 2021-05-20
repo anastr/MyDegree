@@ -2,24 +2,26 @@ package com.github.anastr.myscore.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.preference.PreferenceManager
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.intLiveData
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class CoursesViewModel @AssistedInject constructor(
+@HiltViewModel
+class CoursesViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     application: Application,
     courseRepository: CourseRepository,
-    @Assisted private val yearId: Long,
-    @Assisted private val semester: Semester,
 ): ViewModel() {
+
+    private val yearId: Long = savedStateHandle.get(YEAR_ID_KEY)!!
+    private val semester: Semester = savedStateHandle.get(SEMESTER_KEY)!!
 
     val passDegreeLiveData: LiveData<Int> =
         PreferenceManager.getDefaultSharedPreferences(application)
@@ -27,19 +29,8 @@ class CoursesViewModel @AssistedInject constructor(
 
     val courses: LiveData<List<Course>> = courseRepository.getCourses(yearId, semester).asLiveData()
 
-}
-
-@AssistedFactory
-interface CoursesViewModelFactory {
-    fun create(yearId: Long, semester: Semester): CoursesViewModel
-}
-
-fun CoursesViewModelFactory.provideFactory(
-    yearId: Long,
-    semester: Semester,
-): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return create(yearId, semester) as T
+    companion object {
+        const val YEAR_ID_KEY = "yearId"
+        const val SEMESTER_KEY = "semester"
     }
 }
