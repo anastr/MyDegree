@@ -5,9 +5,20 @@ import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class CourseDialogState {
+    object Dismiss: CourseDialogState()
+    object EmptyName: CourseDialogState()
+    object OneDegreeIsRequired: CourseDialogState()
+    object DegreeBiggerThan100: CourseDialogState()
+    class ExceptionDialog(val e: Exception): CourseDialogState()
+}
 
 @HiltViewModel
 class CourseViewModel @Inject constructor(
@@ -16,6 +27,12 @@ class CourseViewModel @Inject constructor(
 ): ViewModel() {
 
     val courseMode: CourseMode = savedStateHandle.get(COURSE_MODE_KEY)!!
+
+    private val _courseDialogState = MutableSharedFlow<CourseDialogState>(
+        extraBufferCapacity = 10,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val courseDialogState: Flow<CourseDialogState> = _courseDialogState
 
     val course: LiveData<Course?> =
         when (courseMode) {
@@ -35,21 +52,74 @@ class CourseViewModel @Inject constructor(
             )
         }
 
-    fun insertCourse(course: Course) {
-        viewModelScope.launch {
-            courseRepository.insertCourses(course)
+    fun insertOrUpdate(
+        name: String,
+        hasTheoretical: Boolean,
+        hasPractical: Boolean,
+        theoreticalScore: Int,
+        practicalScore: Int,
+    ) {
+        val newOrUpdatedCourse = course.value?.copy(
+            name = name,
+            hasTheoretical = hasTheoretical,
+            hasPractical = hasPractical,
+            theoreticalScore = theoreticalScore,
+            practicalScore = practicalScore,
+        )
+        if (newOrUpdatedCourse != null && validate(newOrUpdatedCourse)) {
+            when (courseMode) {
+                is CourseMode.New -> insertCourse(newOrUpdatedCourse)
+                is CourseMode.Edit -> updateCourse(newOrUpdatedCourse)
+            }
+            _courseDialogState.tryEmit(CourseDialogState.Dismiss)
         }
     }
 
-    fun updateCourse(course: Course) {
-        viewModelScope.launch {
-            courseRepository.updateCourse(course)
+    private fun validate(course: Course): Boolean {
+        return when {
+            course.name.isEmpty() -> {
+                _courseDialogState.tryEmit(CourseDialogState.EmptyName)
+                false
+            }
+            !course.hasTheoretical && !course.hasPractical -> {
+                _courseDialogState.tryEmit(CourseDialogState.OneDegreeIsRequired)
+                false
+            }
+            course.score > 100 -> {
+                _courseDialogState.tryEmit(CourseDialogState.DegreeBiggerThan100)
+                false
+            }
+            else -> true
         }
     }
 
-    fun deleteCourse(course: Course) {
+    private fun insertCourse(course: Course) {
         viewModelScope.launch {
-            courseRepository.deleteCourse(course)
+            try {
+                courseRepository.insertCourses(course)
+            } catch (e: Exception) {
+                _courseDialogState.tryEmit(CourseDialogState.ExceptionDialog(e))
+            }
+        }
+    }
+
+    private fun updateCourse(course: Course) {
+        viewModelScope.launch {
+            try {
+                courseRepository.updateCourse(course)
+            } catch (e: Exception) {
+                _courseDialogState.tryEmit(CourseDialogState.ExceptionDialog(e))
+            }
+        }
+    }
+
+    fun deleteCourse() {
+        viewModelScope.launch {
+            try {
+                course.value?.let { courseRepository.deleteCourse(it) }
+            } catch (e: Exception) {
+                _courseDialogState.tryEmit(CourseDialogState.ExceptionDialog(e))
+            }
         }
     }
 
