@@ -15,12 +15,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class YearsState {
-    object Loading : YearsState()
-    class Success(val data: List<YearWithSemester>) : YearsState()
-    class Error(val error: Exception) : YearsState()
-}
-
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class YearViewModel @Inject constructor(
@@ -43,13 +37,13 @@ class YearViewModel @Inject constructor(
             replay = 1,
         )
 
-    val yearsFlow: StateFlow<YearsState> = passDegree
+    val yearsFlow: StateFlow<State<List<YearWithSemester>>> = passDegree
         .flatMapLatest { yearRepository.getYearsOrdered(it) }
-        .map { YearsState.Success(it) }
+        .map { State.Success(it) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = YearsState.Loading
+            initialValue = State.Loading
         )
 
     val finalDegreeFlow: StateFlow<Float> = passDegree

@@ -19,8 +19,8 @@ import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.MAX_YEARS
 import com.github.anastr.myscore.util.drag.DragItemTouchHelper
 import com.github.anastr.myscore.util.swipe.SwipeItemTouchHelper
+import com.github.anastr.myscore.viewmodel.State
 import com.github.anastr.myscore.viewmodel.YearViewModel
-import com.github.anastr.myscore.viewmodel.YearsState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -77,18 +77,18 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
         addRepeatingJob(Lifecycle.State.STARTED) {
             yearViewModel.yearsFlow.collect { yearsState ->
                 when (yearsState) {
-                    is YearsState.Error -> {
+                    is State.Loading -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.textMessage.visibility = View.GONE
+                        mainActivity?.hideFab()
+                    }
+                    is State.Error -> {
                         binding.progressBar.visibility = View.GONE
                         mainActivity?.hideFab()
                         binding.textMessage.visibility = View.VISIBLE
                         binding.textMessage.text = yearsState.error.message
                     }
-                    YearsState.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.textMessage.visibility = View.GONE
-                        mainActivity?.hideFab()
-                    }
-                    is YearsState.Success -> {
+                    is State.Success -> {
                         binding.progressBar.visibility = View.GONE
                         if (yearsState.data.size >= MAX_YEARS)
                             mainActivity?.hideFab()
@@ -99,8 +99,7 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
                         if (yearsState.data.isEmpty()) {
                             binding.textMessage.visibility = View.VISIBLE
                             binding.textMessage.setText(R.string.noData)
-                        }
-                        else {
+                        } else {
                             binding.textMessage.visibility = View.GONE
                         }
                     }

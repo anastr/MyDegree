@@ -7,12 +7,18 @@ import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.util.MAX_COURSES
 import com.github.anastr.myscore.viewmodel.CoursesViewModel
+import com.github.anastr.myscore.viewmodel.State
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CourseListFragment : Fragment() {
@@ -45,6 +51,7 @@ class CourseListFragment : Fragment() {
         return binding.root
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,17 +60,42 @@ class CourseListFragment : Fragment() {
             adapter = courseAdapter
         }
 
-        coursesViewModel.passDegreeLiveData.observe(viewLifecycleOwner) { passDegree ->
-            courseAdapter.passDegree = passDegree
-        }
-        coursesViewModel.courses.observe(viewLifecycleOwner) { list ->
-            if (list.size >= MAX_COURSES)
-                mainActivity?.hideFab()
-            else
-                mainActivity?.showFab()
-            courseAdapter.submitList(list)
-            binding.progressBar.visibility = View.GONE
-            binding.textNoData.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            launch {
+                coursesViewModel.passDegreeFlow.collect { passDegree ->
+                    courseAdapter.passDegree = passDegree
+                }
+            }
+
+            launch {
+                coursesViewModel.coursesFlow.collect { state ->
+                    when (state) {
+                        is State.Loading -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.textMessage.visibility = View.GONE
+                        }
+                        is State.Error -> {
+                            binding.progressBar.visibility = View.GONE
+                            binding.textMessage.visibility = View.VISIBLE
+                            binding.textMessage.text = state.error.message
+                        }
+                        is State.Success -> {
+                            binding.progressBar.visibility = View.GONE
+                            if (state.data.isEmpty()) {
+                                binding.textMessage.visibility = View.VISIBLE
+                                binding.textMessage.setText(R.string.noData)
+                            } else {
+                                binding.textMessage.visibility = View.GONE
+                            }
+                            if (state.data.size >= MAX_COURSES)
+                                mainActivity?.hideFab()
+                            else
+                                mainActivity?.showFab()
+                            courseAdapter.submitList(state.data)
+                        }
+                    }
+                }
+            }
         }
     }
 

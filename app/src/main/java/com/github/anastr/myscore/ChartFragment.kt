@@ -15,8 +15,8 @@ import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.formattedScore
 import com.github.anastr.myscore.util.getColorFromAttr
 import com.github.anastr.myscore.util.yearsRec
+import com.github.anastr.myscore.viewmodel.State
 import com.github.anastr.myscore.viewmodel.YearViewModel
-import com.github.anastr.myscore.viewmodel.YearsState
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
@@ -66,14 +66,14 @@ class ChartFragment : Fragment() {
             launch {
                 yearViewModel.yearsFlow.collect { yearsState ->
                     when (yearsState) {
-                        is YearsState.Error -> {
+                        is State.Error -> {
                             binding.textMessage.visibility = View.VISIBLE
                             binding.textMessage.text = yearsState.error.message
                         }
-                        YearsState.Loading -> {
+                        is State.Loading -> {
                             binding.textMessage.visibility = View.GONE
                         }
-                        is YearsState.Success -> {
+                        is State.Success -> {
                             binding.textMessage.visibility = View.GONE
                             fillData(yearsState.data)
                         }
