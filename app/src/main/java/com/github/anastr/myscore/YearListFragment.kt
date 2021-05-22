@@ -26,12 +26,10 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import java.util.*
 
 @ExperimentalCoroutinesApi
-@FlowPreview
 @AndroidEntryPoint
 class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
 

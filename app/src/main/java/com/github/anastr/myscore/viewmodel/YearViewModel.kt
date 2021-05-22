@@ -11,7 +11,6 @@ import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +21,6 @@ sealed class YearsState {
     class Error(val error: Exception) : YearsState()
 }
 
-@FlowPreview
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class YearViewModel @Inject constructor(
@@ -55,7 +53,7 @@ class YearViewModel @Inject constructor(
         )
 
     val finalDegreeFlow: StateFlow<Float> = passDegree
-        .flatMapConcat { yearRepository.getFinalDegree(it) }
+        .flatMapLatest { yearRepository.getFinalDegree(it) }
         .map { it ?: 0f }
         .stateIn(
             scope = viewModelScope,

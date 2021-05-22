@@ -9,8 +9,7 @@ import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.addRepeatingJob
 import com.github.anastr.myscore.databinding.FragmentChartBinding
 import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.formattedScore
@@ -26,13 +25,11 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 
 @ExperimentalCoroutinesApi
-@FlowPreview
 @AndroidEntryPoint
 class ChartFragment : Fragment() {
 
@@ -65,31 +62,33 @@ class ChartFragment : Fragment() {
 
         binding.speedometer.speedTextListener = { it.formattedScore() }
 
-        yearViewModel.yearsFlow
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { yearsState ->
-                when (yearsState) {
-                    is YearsState.Error -> {
-                        binding.textMessage.visibility = View.VISIBLE
-                        binding.textMessage.text = yearsState.error.message
-                    }
-                    YearsState.Loading -> {
-                        binding.textMessage.visibility = View.GONE
-                    }
-                    is YearsState.Success -> {
-                        binding.textMessage.visibility = View.GONE
-                        fillData(yearsState.data)
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            launch {
+                yearViewModel.yearsFlow.collect { yearsState ->
+                    when (yearsState) {
+                        is YearsState.Error -> {
+                            binding.textMessage.visibility = View.VISIBLE
+                            binding.textMessage.text = yearsState.error.message
+                        }
+                        YearsState.Loading -> {
+                            binding.textMessage.visibility = View.GONE
+                        }
+                        is YearsState.Success -> {
+                            binding.textMessage.visibility = View.GONE
+                            fillData(yearsState.data)
+                        }
                     }
                 }
             }
-            .launchIn(lifecycleScope)
-
-        yearViewModel.finalDegreeFlow
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach {
-                binding.speedometer.speedTo(speed = it, moveDuration = animationDuration.toLong())
+            launch {
+                yearViewModel.finalDegreeFlow.collect {
+                    binding.speedometer.speedTo(
+                        speed = it,
+                        moveDuration = animationDuration.toLong()
+                    )
+                }
             }
-            .launchIn(lifecycleScope)
+        }
     }
 
     private fun fillData(yearsList: List<YearWithSemester>) {
