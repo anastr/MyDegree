@@ -14,11 +14,12 @@ private fun <T> SharedPreferences.internalFlow(
 ): Flow<T> = callbackFlow {
     // Send the current value.
     offer(getObj(this@internalFlow))
-    val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
-        if (changedKey == key) {
-            offer(getObj(this@internalFlow))
+    val preferenceChangeListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
+            if (changedKey == key) {
+                offer(getObj(this@internalFlow))
+            }
         }
-    }
     // Send new value when it changes.
     registerOnSharedPreferenceChangeListener(preferenceChangeListener)
     awaitClose {
@@ -27,4 +28,9 @@ private fun <T> SharedPreferences.internalFlow(
 }
 
 @ExperimentalCoroutinesApi
-fun SharedPreferences.intFlow(key: String, defValue: Int): Flow<Int> = internalFlow(key) { getInt(key, defValue) }
+fun SharedPreferences.intFlow(key: String, defValue: Int): Flow<Int> =
+    internalFlow(key) { getInt(key, defValue) }
+
+@ExperimentalCoroutinesApi
+fun SharedPreferences.stringFlow(key: String, defValue: String): Flow<String> =
+    internalFlow(key) { getString(key, defValue) ?: defValue }

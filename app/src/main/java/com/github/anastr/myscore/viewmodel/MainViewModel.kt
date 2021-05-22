@@ -1,19 +1,18 @@
 package com.github.anastr.myscore.viewmodel
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.myscore.firebase.documents.DegreeDocument
 import com.github.anastr.myscore.repository.DatabaseRepository
 import com.github.anastr.myscore.repository.FirebaseRepository
-import com.github.anastr.myscore.util.stringLiveData
+import com.github.anastr.myscore.util.stringFlow
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,10 +21,11 @@ class MainViewModel @Inject constructor(
     sharedPreferences: SharedPreferences,
     private val databaseRepository: DatabaseRepository,
     private val firebaseRepository: FirebaseRepository,
-): ViewModel() {
+    defaultDispatcher: CoroutineDispatcher,
+) : ViewModel() {
 
-    private val _loadingLiveData = MutableLiveData(false)
-    val loadingLiveData: LiveData<Boolean> = _loadingLiveData
+    private val _loadingFlow = MutableStateFlow(false)
+    val loadingFlow: StateFlow<Boolean> = _loadingFlow
 
     private val _firebaseStateFlow = MutableSharedFlow<FirebaseState>(
         extraBufferCapacity = 1,
@@ -33,47 +33,50 @@ class MainViewModel @Inject constructor(
     )
     val firebaseStateFlow: Flow<FirebaseState> = _firebaseStateFlow
 
-    val themeLiveData: LiveData<String> =
-        sharedPreferences.stringLiveData("themePref", "-1")
+    @ExperimentalCoroutinesApi
+    val themeFlow: SharedFlow<String> =
+        sharedPreferences.stringFlow("themePref", "-1")
+            .flowOn(defaultDispatcher)
+            .shareIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                replay = 1
+            )
 
     fun insertNewYear() = viewModelScope.launch { databaseRepository.insertNewYear() }
 
     fun firebaseAuthWithGoogle(idToken: String) {
-        _loadingLiveData.value = true
+        _loadingFlow.value = true
         viewModelScope.launch {
             try {
                 val user = firebaseRepository.firebaseAuthWithGoogle(idToken)
                 _firebaseStateFlow.tryEmit(FirebaseState.GoogleLoginSucceeded(user))
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            }
-            finally {
-                _loadingLiveData.value = false
+            } finally {
+                _loadingFlow.value = false
             }
         }
     }
 
     fun sendBackup() {
-        _loadingLiveData.value = true
+        _loadingFlow.value = true
         viewModelScope.launch {
             val years = databaseRepository.getYears()
             val courses = databaseRepository.getCourses()
             try {
                 firebaseRepository.sendBackup(years = years, courses = courses)
                 _firebaseStateFlow.tryEmit(FirebaseState.SendBackupSucceeded)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            }
-            finally {
-                _loadingLiveData.value = false
+            } finally {
+                _loadingFlow.value = false
             }
         }
     }
 
     fun receiveBackup() {
-        _loadingLiveData.value = true
+        _loadingFlow.value = true
         viewModelScope.launch {
             try {
                 val documentSnapshot = firebaseRepository.receiveBackup()
@@ -83,11 +86,10 @@ class MainViewModel @Inject constructor(
                 } else {
                     _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.NoDataOnServer))
                 }
-            } catch (e:Exception) {
+            } catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            }
-            finally {
-                _loadingLiveData.value = false
+            } finally {
+                _loadingFlow.value = false
             }
         }
     }
@@ -96,24 +98,21 @@ class MainViewModel @Inject constructor(
         try {
             databaseRepository.replaceData(degreeDocument)
             _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
         }
     }
 
     fun deleteBackup() {
-        _loadingLiveData.value = true
+        _loadingFlow.value = true
         viewModelScope.launch {
             try {
                 firebaseRepository.deleteBackup()
                 _firebaseStateFlow.tryEmit(FirebaseState.DeleteBackupSucceeded)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            }
-            finally {
-                _loadingLiveData.value = false
+            } finally {
+                _loadingFlow.value = false
             }
         }
     }

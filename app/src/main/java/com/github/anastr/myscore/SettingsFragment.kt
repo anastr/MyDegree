@@ -89,7 +89,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("deleteServerData")
             ?.setOnPreferenceClickListener {
-                if (mainViewModel.loadingLiveData.value == true) {
+                if (mainViewModel.loadingFlow.value == true) {
                     return@setOnPreferenceClickListener true
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {
