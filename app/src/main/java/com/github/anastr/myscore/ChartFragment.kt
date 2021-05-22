@@ -8,12 +8,16 @@ import android.view.ViewGroup
 import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.github.anastr.myscore.databinding.FragmentChartBinding
 import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.formattedScore
 import com.github.anastr.myscore.util.getColorFromAttr
 import com.github.anastr.myscore.util.yearsRec
 import com.github.anastr.myscore.viewmodel.YearViewModel
+import com.github.anastr.myscore.viewmodel.YearsState
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
@@ -21,8 +25,14 @@ import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 @AndroidEntryPoint
 class ChartFragment : Fragment() {
 
@@ -55,13 +65,31 @@ class ChartFragment : Fragment() {
 
         binding.speedometer.speedTextListener = { it.formattedScore() }
 
-        yearViewModel.years.observe(viewLifecycleOwner) {
-            fillData(it)
-        }
+        yearViewModel.yearsFlow
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { yearsState ->
+                when (yearsState) {
+                    is YearsState.Error -> {
+                        binding.textMessage.visibility = View.VISIBLE
+                        binding.textMessage.text = yearsState.error.message
+                    }
+                    YearsState.Loading -> {
+                        binding.textMessage.visibility = View.GONE
+                    }
+                    is YearsState.Success -> {
+                        binding.textMessage.visibility = View.GONE
+                        fillData(yearsState.data)
+                    }
+                }
+            }
+            .launchIn(lifecycleScope)
 
-        yearViewModel.finalDegree.observe(viewLifecycleOwner) {
-            binding.speedometer.speedTo(speed = it ?: 0f, moveDuration = animationDuration.toLong())
-        }
+        yearViewModel.finalDegreeFlow
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach {
+                binding.speedometer.speedTo(speed = it, moveDuration = animationDuration.toLong())
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun fillData(yearsList: List<YearWithSemester>) {
