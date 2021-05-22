@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface YearDao: BaseDao<Year> {
 
 //    @Query("SELECT * FROM year ORDER BY year_order ASC")
-//    fun getAllOrdered(): LiveData<List<Year>>
+//    fun getAllOrdered(): Flow<List<Year>>
 
     @Query(
         """

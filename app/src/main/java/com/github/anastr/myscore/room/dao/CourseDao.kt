@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface CourseDao: BaseDao<Course> {
 
     @Query("SELECT * FROM course WHERE uid = :courseId LIMIT 1")
-    fun getById(courseId: Long): Flow<Course?>
+    suspend fun getById(courseId: Long): Course?
 
     @Query("SELECT * FROM course WHERE year_id = (:yearId) AND semester = (:semester)")
     fun getAll(yearId: Long, semester: Semester): Flow<List<Course>>

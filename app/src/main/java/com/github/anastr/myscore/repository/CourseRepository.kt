@@ -12,7 +12,7 @@ class CourseRepository @Inject constructor (
 
     fun getCourses(yearId: Long, semester: Semester): Flow<List<Course>> = courseDao.getAll(yearId, semester)
 
-    fun getCourse(courseId: Long): Flow<Course?> = courseDao.getById(courseId)
+    suspend fun getCourse(courseId: Long): Course? = courseDao.getById(courseId)
 
     suspend fun insertCourses(vararg courses: Course) = courseDao.insertAll(*courses)
 

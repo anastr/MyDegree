@@ -13,9 +13,11 @@ import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseDialogState
 import com.github.anastr.myscore.viewmodel.CourseViewModel
+import com.github.anastr.myscore.viewmodel.State
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.io.Serializable
 
 sealed class CourseMode : Serializable {
@@ -84,41 +86,54 @@ class CourseDialog : DialogFragment() {
             }
         }
 
-        courseViewModel.course.observe(this) { course ->
-            if (course != null) {
-                binding.nameEditText.setText(course.name)
-                if (course.theoreticalScore != 0)
-                    binding.theoreticalTextInput.editText?.setText(course.theoreticalScore.toString())
-                if (course.practicalScore != 0)
-                    binding.practicalTextInput.editText?.setText(course.practicalScore.toString())
-                binding.theoreticalCheckBox.isChecked = course.hasTheoretical
-                binding.practicalCheckBox.isChecked = course.hasPractical
-            } else {
-                dismiss()
-            }
-        }
-
         addRepeatingJob(Lifecycle.State.STARTED) {
-            courseViewModel.courseDialogState.collect { errorState ->
-                when(errorState) {
-                    CourseDialogState.Dismiss -> dismiss()
-                    CourseDialogState.EmptyName -> binding.nameEditText.error = getString(R.string.this_field_required)
-                    CourseDialogState.OneDegreeIsRequired -> {
-                        Toast.makeText(
-                            activity,
-                            getString(R.string.one_degree_is_required),
-                            Toast.LENGTH_SHORT
-                        ).show()
+            launch {
+                courseViewModel.courseFlow.collect { state ->
+                    when (state) {
+                        State.Loading -> {
+                            // Do nothing!
+                        }
+                        is State.Error -> {
+                            Toast.makeText(requireContext(), state.error.message, Toast.LENGTH_SHORT).show()
+                            dismiss()
+                        }
+                        is State.Success -> {
+                            binding.nameEditText.setText(state.data.name)
+                            if (state.data.theoreticalScore != 0)
+                                binding.theoreticalTextInput.editText?.setText(state.data.theoreticalScore.toString())
+                            if (state.data.practicalScore != 0)
+                                binding.practicalTextInput.editText?.setText(state.data.practicalScore.toString())
+                            binding.theoreticalCheckBox.isChecked = state.data.hasTheoretical
+                            binding.practicalCheckBox.isChecked = state.data.hasPractical
+                        }
                     }
-                    CourseDialogState.DegreeBiggerThan100 -> {
-                        Toast.makeText(
-                            activity,
-                            getString(R.string.degree_should_be_smaller_than_100),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    is CourseDialogState.ExceptionDialog -> {
-                        Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            launch {
+                courseViewModel.courseDialogState.collect { errorState ->
+                    when(errorState) {
+                        CourseDialogState.Dismiss -> dismiss()
+                        CourseDialogState.EmptyName -> {
+                            binding.nameEditText.error = getString(R.string.this_field_required)
+                        }
+                        CourseDialogState.OneDegreeIsRequired -> {
+                            Toast.makeText(
+                                activity,
+                                getString(R.string.one_degree_is_required),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        CourseDialogState.DegreeBiggerThan100 -> {
+                            Toast.makeText(
+                                activity,
+                                getString(R.string.degree_should_be_smaller_than_100),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        is CourseDialogState.ExceptionDialog -> {
+                            Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }

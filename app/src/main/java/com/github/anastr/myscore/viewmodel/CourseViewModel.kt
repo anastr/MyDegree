@@ -1,6 +1,8 @@
 package com.github.anastr.myscore.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.entity.Course
@@ -8,7 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,23 +37,41 @@ class CourseViewModel @Inject constructor(
     )
     val courseDialogState: Flow<CourseDialogState> = _courseDialogState
 
-    val course: LiveData<Course?> =
+    private val _courseFlow: MutableStateFlow<State<Course>> = MutableStateFlow(State.Loading)
+    val courseFlow: StateFlow<State<Course>> = _courseFlow
+    /** Safe access to course synchronously */
+    val course: Course?
+        get() = (courseFlow.value as? State.Success<Course>)?.data
+
+    init {
         when (courseMode) {
-            is CourseMode.Edit -> courseRepository.getCourse(courseMode.courseId)
-                .distinctUntilChanged()
-                .asLiveData()
-            is CourseMode.New -> MutableLiveData(
-                Course(
-                    yearId = courseMode.yearId,
-                    semester = courseMode.semester,
-                    name = "",
-                    hasPractical = true,
-                    hasTheoretical = true,
-                    theoreticalScore = 0,
-                    practicalScore = 0,
+            is CourseMode.Edit -> {
+                viewModelScope.launch {
+                    val course = courseRepository.getCourse(courseMode.courseId)
+                    _courseFlow.value =
+                        if (course != null)
+                            State.Success(course)
+                        else
+                            State.Error(
+                                IllegalArgumentException("Can't find the course!")
+                            )
+                }
+            }
+            is CourseMode.New -> {
+                _courseFlow.value = State.Success(
+                    Course(
+                        yearId = courseMode.yearId,
+                        semester = courseMode.semester,
+                        name = "",
+                        hasPractical = true,
+                        hasTheoretical = true,
+                        theoreticalScore = 0,
+                        practicalScore = 0,
+                    )
                 )
-            )
+            }
         }
+    }
 
     fun insertOrUpdate(
         name: String,
@@ -59,7 +80,7 @@ class CourseViewModel @Inject constructor(
         theoreticalScore: Int,
         practicalScore: Int,
     ) {
-        val newOrUpdatedCourse = course.value?.copy(
+        val newOrUpdatedCourse = course?.copy(
             name = name,
             hasTheoretical = hasTheoretical,
             hasPractical = hasPractical,
@@ -116,7 +137,7 @@ class CourseViewModel @Inject constructor(
     fun deleteCourse() {
         viewModelScope.launch {
             try {
-                course.value?.let { courseRepository.deleteCourse(it) }
+                course?.let { courseRepository.deleteCourse(it) }
             } catch (e: Exception) {
                 _courseDialogState.tryEmit(CourseDialogState.ExceptionDialog(e))
             }
