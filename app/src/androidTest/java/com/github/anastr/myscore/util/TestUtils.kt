@@ -3,11 +3,30 @@ package com.github.anastr.myscore.util
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 
-val testCourse = Course(
-    uid = 1,
-    yearId = 1,
-    semester = Semester.FirstSemester,
-    name = "Course 1",
-    hasPractical = true,
-    hasTheoretical = true,
+val testCoursesList = listOf(
+    Course(
+        uid = 1,
+        yearId = 1,
+        semester = Semester.FirstSemester,
+        name = "Course 1",
+        hasPractical = true,
+        hasTheoretical = true,
+    ),
+    Course(
+        uid = 2,
+        yearId = 1,
+        semester = Semester.FirstSemester,
+        name = "Course 2",
+        hasPractical = true,
+        hasTheoretical = true,
+    ),
+    Course(
+        uid = 3,
+        yearId = 1,
+        semester = Semester.FirstSemester,
+        name = "Course 3",
+        hasPractical = true,
+        hasTheoretical = true,
+    ),
 )
+val testCourse = testCoursesList[0]

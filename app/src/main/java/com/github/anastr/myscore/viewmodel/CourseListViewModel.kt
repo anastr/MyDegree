@@ -1,6 +1,6 @@
 package com.github.anastr.myscore.viewmodel
 
-import android.app.Application
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +10,7 @@ import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CourseListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    application: Application,
+    @ApplicationContext context: Context,
     courseRepository: CourseRepository,
     defaultDispatcher: CoroutineDispatcher,
 ): ViewModel() {
@@ -28,7 +29,7 @@ class CourseListViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
     val passDegreeFlow: SharedFlow<Int> =
-        PreferenceManager.getDefaultSharedPreferences(application).intFlow("passDegree", 60)
+        PreferenceManager.getDefaultSharedPreferences(context).intFlow("passDegree", 60)
             // Do preference job on a worker thread.
             .flowOn(defaultDispatcher)
             .shareIn(
