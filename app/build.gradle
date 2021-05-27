@@ -25,7 +25,7 @@ android {
         versionName "1.2"
 
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.github.anastr.myscore.util.HiltTestRunner"
     }
 
 //    flavorDimensions "default"
@@ -56,6 +56,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    packagingOptions {
+        excludes += "/META-INF/AL2.0"
+        excludes += "/META-INF/LGPL2.1"
     }
 }
 
@@ -117,6 +121,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     testImplementation 'junit:junit:4.13'
+    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$hilt_version")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:$hilt_version")
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
