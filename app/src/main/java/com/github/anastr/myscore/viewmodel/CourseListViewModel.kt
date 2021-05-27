@@ -37,7 +37,7 @@ class CourseListViewModel @Inject constructor(
                 replay = 1,
             )
 
-    val coursesFlow: SharedFlow<State<List<Course>>> =
+    val coursesFlow: StateFlow<State<List<Course>>> =
         courseRepository.getCourses(yearId, semester)
             .map { State.Success(it) }
             .stateIn(
