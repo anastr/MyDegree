@@ -12,7 +12,7 @@ import androidx.lifecycle.addRepeatingJob
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.util.MAX_COURSES
-import com.github.anastr.myscore.viewmodel.CoursesViewModel
+import com.github.anastr.myscore.viewmodel.CourseListViewModel
 import com.github.anastr.myscore.viewmodel.State
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +26,7 @@ class CourseListFragment : Fragment() {
     private var _binding: FragmentCourseListBinding? = null
     private val binding get() =_binding!!
 
-    private val coursesViewModel: CoursesViewModel by viewModels()
+    private val courseListViewModel: CourseListViewModel by viewModels()
 
     private val courseAdapter = CourseAdapter()
 
@@ -62,13 +62,13 @@ class CourseListFragment : Fragment() {
 
         addRepeatingJob(Lifecycle.State.STARTED) {
             launch {
-                coursesViewModel.passDegreeFlow.collect { passDegree ->
+                courseListViewModel.passDegreeFlow.collect { passDegree ->
                     courseAdapter.passDegree = passDegree
                 }
             }
 
             launch {
-                coursesViewModel.coursesFlow.collect { state ->
+                courseListViewModel.coursesFlow.collect { state ->
                     when (state) {
                         is State.Loading -> {
                             binding.progressBar.visibility = View.VISIBLE

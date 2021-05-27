@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
-class CoursesViewModel @Inject constructor(
+class CourseListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     application: Application,
     courseRepository: CourseRepository,
