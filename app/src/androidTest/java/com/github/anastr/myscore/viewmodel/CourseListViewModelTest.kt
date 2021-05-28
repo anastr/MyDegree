@@ -1,9 +1,8 @@
 package com.github.anastr.myscore.viewmodel
 
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import androidx.test.core.app.ApplicationProvider
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.AppDatabase
 import com.github.anastr.myscore.room.entity.Course
@@ -13,6 +12,8 @@ import com.github.anastr.myscore.util.MainCoroutineRule
 import com.github.anastr.myscore.util.testCoursesList
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
@@ -53,7 +54,8 @@ class CourseListViewModelTest {
         appDatabase.databaseDao().insertNewYear(MAX_YEARS)
         appDatabase.courseDao().insertAll(*testCoursesList.toTypedArray())
 
-        val context = ApplicationProvider.getApplicationContext<Context>()
+        val sharedPreferences = mockk<SharedPreferences>(relaxed = true)
+        every { sharedPreferences.getInt("passDegree", any()) } returns TEST_PASS_DEGREE
         val savedStateHandle: SavedStateHandle = SavedStateHandle().apply {
             set("yearId", 1L)
             set("semester", Semester.FirstSemester)
@@ -61,7 +63,7 @@ class CourseListViewModelTest {
 
         viewModel = CourseListViewModel(
             savedStateHandle = savedStateHandle,
-            context = context,
+            sharedPreferences = sharedPreferences,
             courseRepository = courseRepository,
             defaultDispatcher = coroutineRule.testDispatcher,
         )
@@ -70,6 +72,14 @@ class CourseListViewModelTest {
     @After
     fun tearDown() {
         appDatabase.close()
+    }
+
+    @Test
+    fun testPassDegreeFlow() = coroutineRule.testDispatcher.runBlockingTest {
+        val passDegree = withTimeoutOrNull(2000) {
+            viewModel.passDegreeFlow.first()
+        }
+        assertEquals(passDegree, TEST_PASS_DEGREE)
     }
 
     @Test
@@ -82,5 +92,9 @@ class CourseListViewModelTest {
 
         val courses: List<Course> = state!!.data
         assertEquals(courses, testCoursesList)
+    }
+
+    companion object {
+        const val TEST_PASS_DEGREE = 55
     }
 }
