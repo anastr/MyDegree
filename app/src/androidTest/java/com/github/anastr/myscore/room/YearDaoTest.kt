@@ -1,33 +1,40 @@
 package com.github.anastr.myscore.room
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import com.github.anastr.myscore.room.dao.DatabaseDao
 import com.github.anastr.myscore.room.dao.YearDao
 import com.github.anastr.myscore.room.entity.Course
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.MAX_YEARS
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
+@HiltAndroidTest
 class YearDaoTest {
 
-    private lateinit var databaseDao: DatabaseDao
-    private lateinit var yearDao: YearDao
-    private lateinit var db: AppDatabase
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var databaseDao: DatabaseDao
+    @Inject
+    lateinit var yearDao: YearDao
+    @Inject
+    lateinit var db: AppDatabase
 
     @Before
     fun createDb() = runBlocking {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-        databaseDao = db.databaseDao()
-        yearDao = db.yearDao()
+        hiltRule.inject()
 
         for (i in 1..MAX_YEARS)
             databaseDao.insertNewYear(MAX_YEARS)
