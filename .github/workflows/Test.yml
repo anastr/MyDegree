@@ -44,7 +44,10 @@ jobs:
         run: chmod +x ./gradlew
         
       - name: Run unit tests
-        run: ./gradlew testStagingDebugUnitTest
+        run: ./gradlew testDebugUnitTest
+      - name: Android Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }}
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
