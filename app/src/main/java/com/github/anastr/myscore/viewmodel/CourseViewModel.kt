@@ -138,6 +138,7 @@ class CourseViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 course?.let { courseRepository.deleteCourse(it) }
+                _courseDialogState.tryEmit(CourseDialogState.Dismiss)
             } catch (e: Exception) {
                 _courseDialogState.tryEmit(CourseDialogState.ExceptionDialog(e))
             }
