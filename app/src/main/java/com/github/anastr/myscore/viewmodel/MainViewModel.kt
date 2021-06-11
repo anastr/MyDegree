@@ -10,6 +10,7 @@ import com.github.anastr.myscore.util.stringFlow
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -46,76 +47,70 @@ class MainViewModel @Inject constructor(
     fun insertNewYear() = viewModelScope.launch { databaseRepository.insertNewYear() }
 
     fun firebaseAuthWithGoogle(idToken: String) {
-        _loadingFlow.value = true
-        viewModelScope.launch {
-            try {
-                val user = firebaseRepository.firebaseAuthWithGoogle(idToken)
-                _firebaseStateFlow.tryEmit(FirebaseState.GoogleLoginSucceeded(user))
-            } catch (e: Exception) {
-                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            } finally {
-                _loadingFlow.value = false
-            }
+        viewModelScope.launchLoading {
+            _firebaseStateFlow.tryEmit(
+                safeFirebaseCall {
+                    val user = firebaseRepository.firebaseAuthWithGoogle(idToken)
+                    FirebaseState.GoogleLoginSucceeded(user)
+                }
+            )
         }
     }
 
     fun sendBackup() {
-        _loadingFlow.value = true
-        viewModelScope.launch {
-            val years = databaseRepository.getYears()
-            val courses = databaseRepository.getCourses()
-            try {
-                firebaseRepository.sendBackup(years = years, courses = courses)
-                _firebaseStateFlow.tryEmit(FirebaseState.SendBackupSucceeded)
-            } catch (e: Exception) {
-                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            } finally {
-                _loadingFlow.value = false
-            }
+        viewModelScope.launchLoading {
+            _firebaseStateFlow.tryEmit(
+                safeFirebaseCall {
+                    val years = databaseRepository.getYears()
+                    val courses = databaseRepository.getCourses()
+                    firebaseRepository.sendBackup(years = years, courses = courses)
+                    FirebaseState.SendBackupSucceeded
+                }
+            )
         }
     }
 
     fun receiveBackup() {
-        _loadingFlow.value = true
-        viewModelScope.launch {
-            try {
-                val documentSnapshot = firebaseRepository.receiveBackup()
-                if (documentSnapshot.exists()) {
-                    val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
-                    saveDataFromFireStore(degreeDocument!!)
-                } else {
-                    _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.NoDataOnServer))
+        viewModelScope.launchLoading {
+            _firebaseStateFlow.tryEmit(
+                safeFirebaseCall {
+                    val documentSnapshot = firebaseRepository.receiveBackup()
+                    if (documentSnapshot.exists()) {
+                        val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
+                        saveDataFromFireStore(degreeDocument!!)
+                    } else {
+                        FirebaseState.Error(ErrorCode.NoDataOnServer)
+                    }
                 }
-            } catch (e: Exception) {
-                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            } finally {
-                _loadingFlow.value = false
-            }
+            )
         }
     }
 
-    private suspend fun saveDataFromFireStore(degreeDocument: DegreeDocument) {
+    private suspend fun saveDataFromFireStore(degreeDocument: DegreeDocument): FirebaseState =
         try {
             databaseRepository.replaceData(degreeDocument)
-            _firebaseStateFlow.tryEmit(FirebaseState.ReceiveBackupSucceeded)
+            FirebaseState.ReceiveBackupSucceeded
         } catch (e: Exception) {
-            _firebaseStateFlow.tryEmit(FirebaseState.Error(ErrorCode.DataCorrupted))
+            FirebaseState.Error(ErrorCode.DataCorrupted)
+        }
+
+    fun deleteBackup() {
+        viewModelScope.launchLoading {
+            _firebaseStateFlow.tryEmit(
+                safeFirebaseCall {
+                    firebaseRepository.deleteBackup()
+                    FirebaseState.DeleteBackupSucceeded
+                }
+            )
         }
     }
 
-    fun deleteBackup() {
-        _loadingFlow.value = true
-        viewModelScope.launch {
-            try {
-                firebaseRepository.deleteBackup()
-                _firebaseStateFlow.tryEmit(FirebaseState.DeleteBackupSucceeded)
-            } catch (e: Exception) {
-                _firebaseStateFlow.tryEmit(FirebaseState.FirestoreError(e))
-            } finally {
-                _loadingFlow.value = false
-            }
+    private inline fun CoroutineScope.launchLoading(crossinline block: suspend CoroutineScope.() -> Unit) =
+        launch {
+            _loadingFlow.value = true
+            block()
+            _loadingFlow.value = false
         }
-    }
 }
 
 sealed class FirebaseState {
@@ -130,3 +125,11 @@ sealed class FirebaseState {
 enum class ErrorCode {
     NoDataOnServer, DataCorrupted
 }
+
+inline fun safeFirebaseCall(block: () -> FirebaseState): FirebaseState =
+    try {
+        block()
+    } catch (e: Exception) {
+        FirebaseState.FirestoreError(e)
+    }
+
