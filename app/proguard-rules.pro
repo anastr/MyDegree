@@ -22,9 +22,6 @@
 
 
 
-### Firestore
--keep class com.github.anastr.myscore.firebase.documents.** { *; }
-
 ### Default arge for navigation component
 -keepnames class com.github.anastr.myscore.room.entity.Semester
 -keepnames class com.github.anastr.myscore.CourseMode

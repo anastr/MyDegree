@@ -21,24 +21,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:allowDividerAbove="true"
-        app:title="@string/backup_header"
-        app:iconSpaceReserved="false" >
-
-        <CheckBoxPreference
-            app:key="syncFirestoreData"
-            app:defaultValue="false"
-            app:title="@string/enable_auto_sync"
-            app:summaryOn="@string/summary_auto_sync_on"
-            app:summaryOff="@string/summary_auto_sync_off"
-            app:iconSpaceReserved="false" />
-
-        <com.github.anastr.myscore.util.pref.DangerPreference
-            app:key="deleteServerData"
-            app:title="@string/delete_server_data"
-            app:iconSpaceReserved="false" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>

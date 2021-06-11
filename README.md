@@ -1,8 +1,6 @@
 # MyDegree
 High-quality app following Android development best practices using MVVM and single-activity architectures.
 
-> This app is using Firebase to backup data, if you want to clone and run on your device you need to consider adding Firebase project to your fork.
-
 FInd the app on Google-Play:\
 <a href='https://play.google.com/store/apps/details?id=com.github.anastr.myscore'><img  width="25%" alt='My Degree on Google play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
  

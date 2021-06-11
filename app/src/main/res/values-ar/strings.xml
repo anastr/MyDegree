@@ -50,36 +50,15 @@
 
     <!-- General Preferences -->
     <string name="general_header">عام</string>
-    <string name="backup_header">النسخة الاحتياطية</string>
     <string name="pass_degree">علامة النجاح</string>
     <string name="theme">Theme</string>
-    <string name="enable_auto_sync">تمكين المزامنة التلقائية</string>
-    <string name="delete_server_data">حذف النسخة الاحتياطية</string>
-    <string name="summary_auto_sync_on">رفع نسخة احتياطية اسبوعياً بشكل تلقائي.</string>
-    <string name="summary_auto_sync_off">عدم رفع نسخة احتياطية تلقائياَ.</string>
     <string-array name="themes">
         <item>بحسب اعدادات النظام</item>
         <item>Light</item>
         <item>Dark</item>
     </string-array>
 
-    <!-- About -->
-    <string name="send_backup">رفع نسخة اتياطية</string>
-    <string name="receive_backup">استرداد نسخة احتياطية</string>
-
     <!-- Messages -->
-    <string name="message_need_vpn">فشل الاتصال بالمخدم، قد تحتاج إلى VPN</string>
-    <string name="message_failed_connect">فشل الاتصال بالمخدم</string>
-    <string name="google_signin_failed">فشل تسجيل الدخول بحساب Google</string>
-    <string name="firebase_signin_succeeded">مرحباً %s، تم تسجيل الدخول بنجاح. يمكنك الآن رفع واسترداد نسخة احتياطية.</string>
-    <string name="backup_saved_to_server">تم حفظ النسخة الاحتياطية على المخدم</string>
-    <string name="backup_received_from_server">تم استعادة النسخة الاحتياطية</string>
-    <string name="backup_data_empty">لا يوجد نسخة احتياطية</string>
-    <string name="backup_data_corrupted">البيانات تالفة</string>
     <string name="loading_in_progress">جاري التحميل</string>
-    <string name="receive_data_warning_message">سيتم استبدال البيانات الموجودة على جهازك بالنسخة الاحتياطة. هل تريد المتابعة؟</string>
-    <string name="send_backup_warning_message">سيتم فقد النسخ الاحتياطية السابقة واستبدالهة بالبيانات الحالية، هل تريد المتابعة؟</string>
-    <string name="delete_backup_warning_message">ستفقد بيانات النسخة الاحتياطية على الخادم، هل تريد المتابعة؟</string>
-    <string name="backup_deleted_successfully">تم حذف النسخة الاحتياطية</string>
 
 </resources>

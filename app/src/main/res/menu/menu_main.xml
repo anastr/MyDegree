@@ -12,14 +12,4 @@
         android:orderInCategory="100"
         android:title="@string/action_about"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/sendBackup"
-        android:orderInCategory="100"
-        android:title="@string/send_backup"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/receiveBackup"
-        android:orderInCategory="100"
-        android:title="@string/receive_backup"
-        app:showAsAction="never" />
 </menu>
