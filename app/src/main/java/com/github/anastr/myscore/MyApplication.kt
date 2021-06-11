@@ -5,6 +5,9 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.multidex.MultiDex
 import androidx.work.Configuration
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -13,6 +16,9 @@ class MyApplication: Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        Firebase.firestore.firestoreSettings = firestoreSettings {
+            isPersistenceEnabled = false
+        }
     }
 
     override fun attachBaseContext(context: Context?) {
