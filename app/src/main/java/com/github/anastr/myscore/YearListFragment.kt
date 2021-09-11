@@ -8,7 +8,8 @@ import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.anastr.myscore.adapter.YearAdapter
@@ -27,6 +28,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -74,33 +76,35 @@ class YearListFragment : Fragment(), YearAdapter.YearAdapterListener {
             adapter = yearAdapter
         }
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            yearViewModel.yearsFlow.collect { yearsState ->
-                when (yearsState) {
-                    is State.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.textMessage.visibility = View.GONE
-                        mainActivity?.hideFab()
-                    }
-                    is State.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        mainActivity?.hideFab()
-                        binding.textMessage.visibility = View.VISIBLE
-                        binding.textMessage.text = yearsState.error.message
-                    }
-                    is State.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        if (yearsState.data.size >= MAX_YEARS)
-                            mainActivity?.hideFab()
-                        else
-                            mainActivity?.showFab()
-                        yearAdapter.updateData(yearsState.data)
-                        binding.progressBar.visibility = View.GONE
-                        if (yearsState.data.isEmpty()) {
-                            binding.textMessage.visibility = View.VISIBLE
-                            binding.textMessage.setText(R.string.noData)
-                        } else {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                yearViewModel.yearsFlow.collect { yearsState ->
+                    when (yearsState) {
+                        is State.Loading -> {
+                            binding.progressBar.visibility = View.VISIBLE
                             binding.textMessage.visibility = View.GONE
+                            mainActivity?.hideFab()
+                        }
+                        is State.Error -> {
+                            binding.progressBar.visibility = View.GONE
+                            mainActivity?.hideFab()
+                            binding.textMessage.visibility = View.VISIBLE
+                            binding.textMessage.text = yearsState.error.message
+                        }
+                        is State.Success -> {
+                            binding.progressBar.visibility = View.GONE
+                            if (yearsState.data.size >= MAX_YEARS)
+                                mainActivity?.hideFab()
+                            else
+                                mainActivity?.showFab()
+                            yearAdapter.updateData(yearsState.data)
+                            binding.progressBar.visibility = View.GONE
+                            if (yearsState.data.isEmpty()) {
+                                binding.textMessage.visibility = View.VISIBLE
+                                binding.textMessage.setText(R.string.noData)
+                            } else {
+                                binding.textMessage.visibility = View.GONE
+                            }
                         }
                     }
                 }

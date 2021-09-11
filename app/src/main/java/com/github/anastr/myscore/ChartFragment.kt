@@ -9,7 +9,8 @@ import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.myscore.databinding.FragmentChartBinding
 import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.formattedScore
@@ -62,8 +63,8 @@ class ChartFragment : Fragment() {
 
         binding.speedometer.speedTextListener = { it.formattedScore() }
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            launch {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 yearViewModel.yearsFlow.collect { yearsState ->
                     when (yearsState) {
                         is State.Error -> {
@@ -80,7 +81,9 @@ class ChartFragment : Fragment() {
                     }
                 }
             }
-            launch {
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 yearViewModel.finalDegreeFlow.collect {
                     binding.speedometer.speedTo(
                         speed = it,

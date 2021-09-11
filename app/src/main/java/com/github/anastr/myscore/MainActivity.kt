@@ -8,7 +8,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -95,8 +96,8 @@ class MainActivity : AppCompatActivity(),
             this@MainActivity
         )
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            launch {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.themeFlow.collect { nightMode ->
                     AppCompatDelegate.setDefaultNightMode(
                         when (nightMode) {
