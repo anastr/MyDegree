@@ -8,7 +8,8 @@ import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.util.MAX_COURSES
@@ -60,14 +61,15 @@ class CourseListFragment : Fragment() {
             adapter = courseAdapter
         }
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            launch {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 courseListViewModel.passDegreeFlow.collect { passDegree ->
                     courseAdapter.passDegree = passDegree
                 }
             }
-
-            launch {
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 courseListViewModel.coursesFlow.collect { state ->
                     when (state) {
                         is State.Loading -> {

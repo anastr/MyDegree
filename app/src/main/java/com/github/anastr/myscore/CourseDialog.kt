@@ -7,7 +7,8 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.myscore.databinding.DialogCourseBinding
 import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.rapidClickListener
@@ -86,15 +87,19 @@ class CourseDialog : DialogFragment() {
             }
         }
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            launch {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 courseViewModel.courseFlow.collect { state ->
                     when (state) {
                         State.Loading -> {
                             // Do nothing!
                         }
                         is State.Error -> {
-                            Toast.makeText(requireContext(), state.error.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                state.error.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
                             dismiss()
                         }
                         is State.Success -> {
@@ -109,8 +114,9 @@ class CourseDialog : DialogFragment() {
                     }
                 }
             }
-
-            launch {
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 courseViewModel.courseDialogState.collect { errorState ->
                     when(errorState) {
                         CourseDialogState.Dismiss -> dismiss()
