@@ -98,72 +98,74 @@ class MainActivity : AppCompatActivity(),
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.themeFlow.collect { nightMode ->
-                    AppCompatDelegate.setDefaultNightMode(
-                        when (nightMode) {
-                            "1" -> AppCompatDelegate.MODE_NIGHT_NO
-                            "2" -> AppCompatDelegate.MODE_NIGHT_YES
-                            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                        }
-                    )
-                }
-            }
-
-            launch {
-                mainViewModel.loadingFlow.collect { isLoading ->
-                    if (isLoading) {
-                        loading = true
-                        binding.progress.show()
-                    } else {
-                        loading = false
-                        binding.progress.hide()
+                launch {
+                    mainViewModel.themeFlow.collect { nightMode ->
+                        AppCompatDelegate.setDefaultNightMode(
+                            when (nightMode) {
+                                "1" -> AppCompatDelegate.MODE_NIGHT_NO
+                                "2" -> AppCompatDelegate.MODE_NIGHT_YES
+                                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            }
+                        )
                     }
                 }
-            }
 
-            launch {
-                mainViewModel.firebaseStateFlow.collect { state ->
-                    when (state) {
-                        is FirebaseState.GoogleLoginSucceeded -> {
-                            MaterialAlertDialogBuilder(this@MainActivity)
-                                .setMessage(
-                                    String.format(
-                                        getString(R.string.firebase_signin_succeeded),
-                                        state.user.displayName
+                launch {
+                    mainViewModel.loadingFlow.collect { isLoading ->
+                        if (isLoading) {
+                            loading = true
+                            binding.progress.show()
+                        } else {
+                            loading = false
+                            binding.progress.hide()
+                        }
+                    }
+                }
+
+                launch {
+                    mainViewModel.firebaseStateFlow.collect { state ->
+                        when (state) {
+                            is FirebaseState.GoogleLoginSucceeded -> {
+                                MaterialAlertDialogBuilder(this@MainActivity)
+                                    .setMessage(
+                                        String.format(
+                                            getString(R.string.firebase_signin_succeeded),
+                                            state.user.displayName
+                                        )
                                     )
-                                )
-                                .setPositiveButton(R.string.ok, null)
-                                .show()
-                        }
-                        is FirebaseState.Error -> {
-                            val message = when (state.errorCode) {
-                                ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
-                                ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
+                                    .setPositiveButton(R.string.ok, null)
+                                    .show()
                             }
-                            showSnackBar(message)
-                        }
-                        is FirebaseState.FirestoreError -> {
-                            state.exception.printStackTrace()
-                            showSnackBar(getString(R.string.message_need_vpn))
-                        }
-                        FirebaseState.SendBackupSucceeded -> {
-                            showSnackBar(
-                                getString(R.string.backup_saved_to_server),
-                                Snackbar.LENGTH_LONG
-                            )
-                        }
-                        FirebaseState.ReceiveBackupSucceeded -> {
-                            navController.popBackStack(R.id.year_page_fragment, false)
-                            showSnackBar(
-                                getString(R.string.backup_received_from_server),
-                                Snackbar.LENGTH_LONG
-                            )
-                        }
-                        FirebaseState.DeleteBackupSucceeded -> {
-                            showSnackBar(
-                                getString(R.string.backup_deleted_successfully),
-                                Snackbar.LENGTH_LONG
-                            )
+                            is FirebaseState.Error -> {
+                                val message = when (state.errorCode) {
+                                    ErrorCode.NoDataOnServer -> getString(R.string.backup_data_empty)
+                                    ErrorCode.DataCorrupted -> getString(R.string.backup_data_corrupted)
+                                }
+                                showSnackBar(message)
+                            }
+                            is FirebaseState.FirestoreError -> {
+                                state.exception.printStackTrace()
+                                showSnackBar(getString(R.string.message_need_vpn))
+                            }
+                            FirebaseState.SendBackupSucceeded -> {
+                                showSnackBar(
+                                    getString(R.string.backup_saved_to_server),
+                                    Snackbar.LENGTH_LONG
+                                )
+                            }
+                            FirebaseState.ReceiveBackupSucceeded -> {
+                                navController.popBackStack(R.id.year_page_fragment, false)
+                                showSnackBar(
+                                    getString(R.string.backup_received_from_server),
+                                    Snackbar.LENGTH_LONG
+                                )
+                            }
+                            FirebaseState.DeleteBackupSucceeded -> {
+                                showSnackBar(
+                                    getString(R.string.backup_deleted_successfully),
+                                    Snackbar.LENGTH_LONG
+                                )
+                            }
                         }
                     }
                 }
