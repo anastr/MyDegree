@@ -1,7 +1,7 @@
 package com.github.anastr.myscore.util
 
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.entities.Semester
 
 val testCoursesList = listOf(
     Course(

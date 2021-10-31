@@ -1,8 +1,7 @@
-package com.github.anastr.myscore.room.view
+package com.github.anastr.domain.entities.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
-import com.github.anastr.myscore.room.entity.Year
 
 data class YearWithSemester(
     @Embedded val year: Year,

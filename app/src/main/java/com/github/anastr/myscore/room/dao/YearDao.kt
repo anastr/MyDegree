@@ -2,8 +2,8 @@ package com.github.anastr.myscore.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.github.anastr.myscore.room.entity.Year
-import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.domain.entities.db.Year
+import com.github.anastr.domain.entities.db.YearWithSemester
 import kotlinx.coroutines.flow.Flow
 
 @Dao

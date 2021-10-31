@@ -2,8 +2,8 @@ package com.github.anastr.myscore.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Course
 import kotlinx.coroutines.flow.Flow
 
 @Dao

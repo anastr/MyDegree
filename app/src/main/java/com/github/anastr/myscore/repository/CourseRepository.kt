@@ -1,8 +1,8 @@
 package com.github.anastr.myscore.repository
 
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.myscore.room.dao.CourseDao
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

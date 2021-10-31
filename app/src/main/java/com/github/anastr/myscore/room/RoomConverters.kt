@@ -1,7 +1,7 @@
 package com.github.anastr.myscore.room
 
 import androidx.room.TypeConverter
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.domain.entities.Semester
 
 class RoomConverters {
     @TypeConverter

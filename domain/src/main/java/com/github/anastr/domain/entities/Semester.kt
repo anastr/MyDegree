@@ -1,4 +1,4 @@
-package com.github.anastr.myscore.room.entity
+package com.github.anastr.domain.entities
 
 enum class Semester {
     FirstSemester, SecondSemester;

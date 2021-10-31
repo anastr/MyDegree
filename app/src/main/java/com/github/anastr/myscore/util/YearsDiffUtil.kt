@@ -1,7 +1,7 @@
 package com.github.anastr.myscore.util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.domain.entities.db.YearWithSemester
 
 class YearsDiffUtil(
     private val oldList: List<YearWithSemester>,

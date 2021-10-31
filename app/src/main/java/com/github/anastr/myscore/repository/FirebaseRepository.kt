@@ -1,15 +1,16 @@
 package com.github.anastr.myscore.repository
 
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.entities.db.UniversityDataEntity
+import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.myscore.firebase.documents.DegreeDocument
+import com.github.anastr.myscore.firebase.toCourse
 import com.github.anastr.myscore.firebase.toHashMap
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.myscore.firebase.toYear
 import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.myscore.util.await
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,12 +24,12 @@ class FirebaseRepository @Inject constructor (
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     @Throws(Exception::class)
-    suspend fun firebaseAuthWithGoogle(idToken: String): FirebaseUser {
+    suspend fun firebaseAuthWithGoogle(idToken: String): String? {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val result = withContext(defaultDispatcher) {
             auth.signInWithCredential(credential).await()
         }
-        return result.user!!
+        return result.user?.displayName
     }
 
     @Throws(Exception::class)
@@ -48,11 +49,20 @@ class FirebaseRepository @Inject constructor (
     }
 
     @Throws(Exception::class)
-    suspend fun receiveBackup(): DocumentSnapshot {
+    suspend fun receiveBackup(): UniversityDataEntity {
         return withContext(defaultDispatcher) {
             val db = Firebase.firestore
             val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
-            docRef.get().await()
+            val documentSnapshot = docRef.get().await()
+            val degreeDocument = if (documentSnapshot.exists()) {
+                documentSnapshot.toObject(DegreeDocument::class.java)!!
+            } else {
+                DegreeDocument()
+            }
+            UniversityDataEntity(
+                years = degreeDocument.years?.map { it.toYear() } ?: emptyList(),
+                courses = degreeDocument.courses?.map { it.toCourse() } ?: emptyList(),
+            )
         }
     }
 

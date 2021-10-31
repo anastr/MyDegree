@@ -1,8 +1,8 @@
 package com.github.anastr.myscore.room.dao
 
 import androidx.room.*
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.entities.db.Year
 
 @Dao
 interface DatabaseDao {
@@ -30,8 +30,7 @@ interface DatabaseDao {
     suspend fun deleteYear(year: Year) {
         deleteYear(year.uid)
         deleteCourse(year.uid)
-        val years = getAllYears()
-        years.forEachIndexed { index, y -> y.order = index }
+        val years = getAllYears().mapIndexed { index, y -> y.copy(order = index) }
         updateAll(*years.toTypedArray())
     }
 

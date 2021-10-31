@@ -1,8 +1,8 @@
 package com.github.anastr.myscore.firebase
 
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
-import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Year
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

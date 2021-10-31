@@ -5,8 +5,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.github.anastr.myscore.repository.CourseRepository
 import com.github.anastr.myscore.room.AppDatabase
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.entities.Semester
 import com.github.anastr.myscore.util.MAX_YEARS
 import com.github.anastr.myscore.util.MainCoroutineRule
 import com.github.anastr.myscore.util.testCoursesList

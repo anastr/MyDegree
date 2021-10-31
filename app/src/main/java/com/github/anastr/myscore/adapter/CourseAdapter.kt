@@ -13,7 +13,7 @@ import com.github.anastr.myscore.CourseListFragmentDirections
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.ItemCourseBinding
-import com.github.anastr.myscore.room.entity.Course
+import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.myscore.util.rapidClickListener
 import java.util.*
 

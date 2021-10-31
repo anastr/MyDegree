@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.anastr.myscore.room.dao.YearDao
-import com.github.anastr.myscore.room.entity.Year
+import com.github.anastr.domain.entities.db.Year
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope

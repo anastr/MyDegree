@@ -3,10 +3,10 @@ package com.github.anastr.myscore.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.anastr.domain.entities.db.Year
+import com.github.anastr.domain.entities.db.YearWithSemester
 import com.github.anastr.myscore.repository.DatabaseRepository
 import com.github.anastr.myscore.repository.YearRepository
-import com.github.anastr.myscore.room.entity.Year
-import com.github.anastr.myscore.room.view.YearWithSemester
 import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
