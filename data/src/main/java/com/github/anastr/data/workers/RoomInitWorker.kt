@@ -1,10 +1,9 @@
-package com.github.anastr.myscore.worker
+package com.github.anastr.data.workers
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.github.anastr.myscore.room.dao.YearDao
 import com.github.anastr.domain.entities.db.Year
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -14,7 +13,7 @@ import kotlinx.coroutines.coroutineScope
 class RoomInitWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val yearDao: YearDao,
+    private val yearDao: com.github.anastr.data.datasource.YearDao,
 ): CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {

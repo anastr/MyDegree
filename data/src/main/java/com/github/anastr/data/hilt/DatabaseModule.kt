@@ -1,7 +1,7 @@
-package com.github.anastr.myscore.hilt
+package com.github.anastr.data.hilt
 
 import android.content.Context
-import com.github.anastr.myscore.room.AppDatabase
+import com.github.anastr.data.room.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +12,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
+
     @Singleton
     @Provides
     fun provideAppDatabase(@ApplicationContext applicationContext: Context): AppDatabase {

@@ -1,4 +1,4 @@
-package com.github.anastr.myscore.room.dao
+package com.github.anastr.data.datasource
 
 import androidx.room.*
 import com.github.anastr.domain.entities.db.Course

@@ -1,7 +1,7 @@
 package com.github.anastr.myscore.firebase
 
-import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.myscore.util.getBoolean
 import com.github.anastr.myscore.util.getInt

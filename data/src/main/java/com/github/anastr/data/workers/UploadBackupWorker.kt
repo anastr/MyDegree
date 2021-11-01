@@ -1,14 +1,14 @@
-package com.github.anastr.myscore.worker
+package com.github.anastr.data.workers
 
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.github.anastr.myscore.firebase.documents.DegreeDocument
+import com.github.anastr.data.datasource.DatabaseDao
+import com.github.anastr.data.models.DegreeDocument
+import com.github.anastr.domain.constant.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.myscore.firebase.toHashMap
-import com.github.anastr.myscore.room.dao.DatabaseDao
-import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.myscore.util.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore

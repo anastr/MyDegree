@@ -1,4 +1,4 @@
-package com.github.anastr.myscore.hilt
+package com.github.anastr.data.hilt
 
 import android.app.Application
 import android.content.SharedPreferences
@@ -20,6 +20,7 @@ object AppModule {
             = PreferenceManager.getDefaultSharedPreferences(application)
 
     @Provides
+    @DefaultDispatcher
     fun provideDefaultDispatcher(): CoroutineDispatcher
             = Dispatchers.IO
 }

@@ -1,13 +1,14 @@
-package com.github.anastr.myscore.repository
+package com.github.anastr.data.repositories
 
+import com.github.anastr.data.models.DegreeDocument
+import com.github.anastr.domain.constant.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.domain.entities.db.UniversityDataEntity
 import com.github.anastr.domain.entities.db.Year
-import com.github.anastr.myscore.firebase.documents.DegreeDocument
+import com.github.anastr.domain.repositories.FirebaseRepo
 import com.github.anastr.myscore.firebase.toCourse
 import com.github.anastr.myscore.firebase.toHashMap
 import com.github.anastr.myscore.firebase.toYear
-import com.github.anastr.myscore.util.FIRESTORE_DEGREES_COLLECTION
 import com.github.anastr.myscore.util.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -15,16 +16,15 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class FirebaseRepository @Inject constructor (
+internal class FirebaseRepository(
     private val defaultDispatcher: CoroutineDispatcher,
-) {
+): FirebaseRepo {
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     @Throws(Exception::class)
-    suspend fun firebaseAuthWithGoogle(idToken: String): String? {
+    override suspend fun firebaseAuthWithGoogle(idToken: String): String? {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val result = withContext(defaultDispatcher) {
             auth.signInWithCredential(credential).await()
@@ -33,7 +33,7 @@ class FirebaseRepository @Inject constructor (
     }
 
     @Throws(Exception::class)
-    suspend fun sendBackup(years: List<Year>, courses: List<Course>) {
+    override suspend fun sendBackup(years: List<Year>, courses: List<Course>) {
         withContext(defaultDispatcher) {
             val db = Firebase.firestore
             val degreeDocument = DegreeDocument().apply {
@@ -49,7 +49,7 @@ class FirebaseRepository @Inject constructor (
     }
 
     @Throws(Exception::class)
-    suspend fun receiveBackup(): UniversityDataEntity {
+    override suspend fun receiveBackup(): UniversityDataEntity {
         return withContext(defaultDispatcher) {
             val db = Firebase.firestore
             val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)
@@ -67,7 +67,7 @@ class FirebaseRepository @Inject constructor (
     }
 
     @Throws(Exception::class)
-    suspend fun deleteBackup() {
+    override suspend fun deleteBackup() {
         return withContext(defaultDispatcher) {
             val db = Firebase.firestore
             val docRef = db.collection(FIRESTORE_DEGREES_COLLECTION).document(auth.currentUser!!.uid)

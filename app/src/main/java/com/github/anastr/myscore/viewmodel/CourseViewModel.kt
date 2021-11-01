@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.repositories.WriteCourseRepo
 import com.github.anastr.myscore.CourseMode
-import com.github.anastr.myscore.repository.CourseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ sealed class CourseDialogState {
 @HiltViewModel
 class CourseViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val courseRepository: CourseRepository,
+    private val courseRepository: WriteCourseRepo,
 ): ViewModel() {
 
     val courseMode: CourseMode = savedStateHandle.get(COURSE_MODE_KEY)!!

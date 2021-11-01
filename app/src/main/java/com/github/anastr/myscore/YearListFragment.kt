@@ -12,12 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.github.anastr.myscore.adapter.YearAdapter
-import com.github.anastr.myscore.databinding.FragmentYearListBinding
+import com.github.anastr.domain.constant.MAX_YEARS
 import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.domain.entities.db.YearWithSemester
-import com.github.anastr.myscore.util.MAX_YEARS
+import com.github.anastr.myscore.adapter.YearAdapter
+import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.util.drag.DragItemTouchHelper
 import com.github.anastr.myscore.util.swipe.SwipeItemTouchHelper
 import com.github.anastr.myscore.viewmodel.State

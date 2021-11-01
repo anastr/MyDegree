@@ -3,9 +3,10 @@ package com.github.anastr.myscore.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.anastr.data.hilt.DefaultDispatcher
 import com.github.anastr.domain.entities.db.UniversityDataEntity
-import com.github.anastr.myscore.repository.DatabaseRepository
-import com.github.anastr.myscore.repository.FirebaseRepository
+import com.github.anastr.domain.repositories.FirebaseRepo
+import com.github.anastr.domain.repositories.MainDatabaseRepo
 import com.github.anastr.myscore.util.stringFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,9 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     sharedPreferences: SharedPreferences,
-    private val databaseRepository: DatabaseRepository,
-    private val firebaseRepository: FirebaseRepository,
-    defaultDispatcher: CoroutineDispatcher,
+    private val databaseRepository: MainDatabaseRepo,
+    private val firebaseRepository: FirebaseRepo,
+    @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _loadingFlow = MutableStateFlow(false)
