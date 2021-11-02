@@ -9,7 +9,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class GoogleSignInContent: ActivityResultContract<Int, Intent?>() {
-    override fun createIntent(context: Context, input: Int?): Intent {
+    override fun createIntent(context: Context, input: Int): Intent {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
             .requestProfile()

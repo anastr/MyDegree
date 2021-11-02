@@ -30,9 +30,9 @@ allprojects {
 
 ext {
     preference_version = "1.1.1"
-    work_version = "2.6.0"
+    work_version = "2.7.0"
     room_version = "2.3.0"
-    lifecycle_version = "2.4.0-beta01"
+    lifecycle_version = "2.4.0"
     rx_java = "3.0.7"
     firebase_version = "28.1.0"
 }
