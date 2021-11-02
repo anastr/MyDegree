@@ -10,7 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.myscore.databinding.DialogCourseBinding
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.domain.entities.Semester
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseDialogState
 import com.github.anastr.myscore.viewmodel.CourseViewModel

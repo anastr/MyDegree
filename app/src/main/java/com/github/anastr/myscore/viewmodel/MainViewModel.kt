@@ -3,11 +3,11 @@ package com.github.anastr.myscore.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.anastr.myscore.firebase.documents.DegreeDocument
-import com.github.anastr.myscore.repository.DatabaseRepository
-import com.github.anastr.myscore.repository.FirebaseRepository
+import com.github.anastr.data.hilt.DefaultDispatcher
+import com.github.anastr.domain.entities.db.UniversityDataEntity
+import com.github.anastr.domain.repositories.FirebaseRepo
+import com.github.anastr.domain.repositories.MainDatabaseRepo
 import com.github.anastr.myscore.util.stringFlow
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -20,9 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     sharedPreferences: SharedPreferences,
-    private val databaseRepository: DatabaseRepository,
-    private val firebaseRepository: FirebaseRepository,
-    defaultDispatcher: CoroutineDispatcher,
+    private val databaseRepository: MainDatabaseRepo,
+    private val firebaseRepository: FirebaseRepo,
+    @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _loadingFlow = MutableStateFlow(false)
@@ -50,8 +50,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launchLoading {
             _firebaseStateFlow.tryEmit(
                 safeFirebaseCall {
-                    val user = firebaseRepository.firebaseAuthWithGoogle(idToken)
-                    FirebaseState.GoogleLoginSucceeded(user)
+                    val userName = firebaseRepository.firebaseAuthWithGoogle(idToken)
+                    FirebaseState.GoogleLoginSucceeded(userName ?: "")
                 }
             )
         }
@@ -74,21 +74,20 @@ class MainViewModel @Inject constructor(
         viewModelScope.launchLoading {
             _firebaseStateFlow.tryEmit(
                 safeFirebaseCall {
-                    val documentSnapshot = firebaseRepository.receiveBackup()
-                    if (documentSnapshot.exists()) {
-                        val degreeDocument = documentSnapshot.toObject(DegreeDocument::class.java)
-                        saveDataFromFireStore(degreeDocument!!)
-                    } else {
+                    val remoteData = firebaseRepository.receiveBackup()
+                    if (remoteData.years.isEmpty() && remoteData.courses.isEmpty()) {
                         FirebaseState.Error(ErrorCode.NoDataOnServer)
+                    } else {
+                        saveDataFromFireStore(remoteData)
                     }
                 }
             )
         }
     }
 
-    private suspend fun saveDataFromFireStore(degreeDocument: DegreeDocument): FirebaseState =
+    private suspend fun saveDataFromFireStore(data: UniversityDataEntity): FirebaseState =
         try {
-            databaseRepository.replaceData(degreeDocument)
+            databaseRepository.replaceData(data)
             FirebaseState.ReceiveBackupSucceeded
         } catch (e: Exception) {
             FirebaseState.Error(ErrorCode.DataCorrupted)
@@ -114,7 +113,7 @@ class MainViewModel @Inject constructor(
 }
 
 sealed class FirebaseState {
-    class GoogleLoginSucceeded(val user: FirebaseUser) : FirebaseState()
+    class GoogleLoginSucceeded(val userName: String) : FirebaseState()
     class Error(val errorCode: ErrorCode) : FirebaseState()
     class FirestoreError(val exception: Exception) : FirebaseState()
     object SendBackupSucceeded : FirebaseState()
@@ -132,4 +131,3 @@ inline fun safeFirebaseCall(block: () -> FirebaseState): FirebaseState =
     } catch (e: Exception) {
         FirebaseState.FirestoreError(e)
     }
-

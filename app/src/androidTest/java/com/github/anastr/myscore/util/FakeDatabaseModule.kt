@@ -2,8 +2,8 @@ package com.github.anastr.myscore.util
 
 import android.content.Context
 import androidx.room.Room
-import com.github.anastr.myscore.hilt.DatabaseModule
-import com.github.anastr.myscore.room.AppDatabase
+import com.github.anastr.data.hilt.DatabaseModule
+import com.github.anastr.data.room.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext

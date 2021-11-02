@@ -4,9 +4,10 @@ import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.anastr.myscore.repository.CourseRepository
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
+import com.github.anastr.data.hilt.DefaultDispatcher
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.repositories.ReadCourseRepo
 import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,8 +19,8 @@ import javax.inject.Inject
 class CourseListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     sharedPreferences: SharedPreferences,
-    courseRepository: CourseRepository,
-    defaultDispatcher: CoroutineDispatcher,
+    courseRepository: ReadCourseRepo,
+    @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
 ): ViewModel() {
 
     private val yearId: Long = savedStateHandle.get(YEAR_ID_KEY)!!

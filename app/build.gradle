@@ -65,10 +65,8 @@ android {
 
 dependencies {
 
-    def work_version = "2.6.0"
-    def room_version = "2.3.0"
-    def lifecycle_version = "2.4.0-beta01"
-    def rx_java = "3.0.7"
+    implementation project(path: ':domain')
+    implementation project(path: ':data')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.core:core-ktx:1.6.0'
@@ -81,8 +79,9 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation "androidx.preference:preference-ktx:$preference_version"
 
+    // Work
     implementation "androidx.work:work-runtime-ktx:$work_version"
 
     // Chart and speedometer
@@ -91,8 +90,8 @@ dependencies {
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation 'androidx.hilt:hilt-work:1.0.0'
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt 'androidx.hilt:hilt-compiler:1.0.0'
 
     // Room
@@ -111,7 +110,7 @@ dependencies {
     implementation "io.reactivex.rxjava3:rxjava:$rx_java"
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'

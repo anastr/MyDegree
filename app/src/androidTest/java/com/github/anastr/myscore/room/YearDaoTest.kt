@@ -1,10 +1,11 @@
 package com.github.anastr.myscore.room
 
-import com.github.anastr.myscore.room.dao.DatabaseDao
-import com.github.anastr.myscore.room.dao.YearDao
-import com.github.anastr.myscore.room.entity.Course
-import com.github.anastr.myscore.room.entity.Semester
-import com.github.anastr.myscore.util.MAX_YEARS
+import com.github.anastr.data.datasource.DatabaseDao
+import com.github.anastr.data.datasource.YearDao
+import com.github.anastr.data.room.AppDatabase
+import com.github.anastr.domain.constant.MAX_YEARS
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Course
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

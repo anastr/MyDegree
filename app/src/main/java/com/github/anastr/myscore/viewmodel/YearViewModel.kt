@@ -3,10 +3,10 @@ package com.github.anastr.myscore.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.anastr.myscore.repository.DatabaseRepository
-import com.github.anastr.myscore.repository.YearRepository
-import com.github.anastr.myscore.room.entity.Year
-import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.data.hilt.DefaultDispatcher
+import com.github.anastr.domain.entities.db.Year
+import com.github.anastr.domain.entities.db.YearWithSemester
+import com.github.anastr.domain.repositories.YearRepo
 import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,9 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class YearViewModel @Inject constructor(
     sharedPreferences: SharedPreferences,
-    private val databaseRepository: DatabaseRepository,
-    private val yearRepository: YearRepository,
-    defaultDispatcher: CoroutineDispatcher,
+    private val yearRepository: YearRepo,
+    @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val passDegree: SharedFlow<Int> =
@@ -58,5 +57,5 @@ class YearViewModel @Inject constructor(
     fun updateYears(vararg years: Year) =
         viewModelScope.launch { yearRepository.updateYears(*years) }
 
-    fun deleteYear(year: Year) = viewModelScope.launch { databaseRepository.deleteYear(year) }
+    fun deleteYear(year: Year) = viewModelScope.launch { yearRepository.deleteYear(year) }
 }

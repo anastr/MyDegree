@@ -11,10 +11,10 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.work.*
+import com.github.anastr.data.workers.UploadBackupWorker
 import com.github.anastr.myscore.util.pref.NumberPickerPreference
 import com.github.anastr.myscore.util.pref.NumberPreferenceDialogFragmentCompat
 import com.github.anastr.myscore.viewmodel.MainViewModel
-import com.github.anastr.myscore.worker.UploadBackupWorker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -89,7 +89,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("deleteServerData")
             ?.setOnPreferenceClickListener {
-                if (mainViewModel.loadingFlow.value == true) {
+                if (mainViewModel.loadingFlow.value) {
                     return@setOnPreferenceClickListener true
                 }
                 if (FirebaseAuth.getInstance().currentUser == null) {

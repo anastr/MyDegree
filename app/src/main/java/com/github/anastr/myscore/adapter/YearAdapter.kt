@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.anastr.myscore.databinding.ItemYearBinding
-import com.github.anastr.myscore.room.entity.Semester
-import com.github.anastr.myscore.room.entity.Year
-import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.entities.db.Year
+import com.github.anastr.domain.entities.db.YearWithSemester
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.util.drag.DragTouchHelper
 import com.github.anastr.myscore.util.swipe.SwipeTouchHelper
@@ -56,11 +56,21 @@ class YearAdapter(
     }
 
     override fun onItemMoved() {
-        listener.onYearItemMoved(years.mapIndexed { index, item -> Year(uid = item.year.uid, order = index) })
+        listener.onYearItemMoved(years.mapIndexed { index, item ->
+            Year(
+                uid = item.year.uid,
+                order = index
+            )
+        })
     }
 
     override fun onItemSwiped(position: Int) {
-        listener.onYearItemSwiped(years[position].let { Year(uid = it.year.uid, order = it.year.order) })
+        listener.onYearItemSwiped(years[position].let {
+            Year(
+                uid = it.year.uid,
+                order = it.year.order
+            )
+        })
         notifyItemChanged(position)
     }
 

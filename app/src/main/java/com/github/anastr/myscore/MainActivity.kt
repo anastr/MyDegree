@@ -17,9 +17,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.anastr.domain.entities.Semester
 import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.firebase.GoogleSignInContent
-import com.github.anastr.myscore.room.entity.Semester
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.ErrorCode
 import com.github.anastr.myscore.viewmodel.FirebaseState
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(),
                                     .setMessage(
                                         String.format(
                                             getString(R.string.firebase_signin_succeeded),
-                                            state.user.displayName
+                                            state.userName
                                         )
                                     )
                                     .setPositiveButton(R.string.ok, null)

@@ -12,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.myscore.databinding.FragmentChartBinding
-import com.github.anastr.myscore.room.view.YearWithSemester
+import com.github.anastr.domain.entities.db.YearWithSemester
 import com.github.anastr.myscore.util.formattedScore
 import com.github.anastr.myscore.util.getColorFromAttr
 import com.github.anastr.myscore.util.yearsRec

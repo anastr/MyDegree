@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.google.gms:google-services:4.3.8'
@@ -26,6 +26,15 @@ allprojects {
         google()
         maven { url 'https://jitpack.io' }
     }
+}
+
+ext {
+    preference_version = "1.1.1"
+    work_version = "2.6.0"
+    room_version = "2.3.0"
+    lifecycle_version = "2.4.0-beta01"
+    rx_java = "3.0.7"
+    firebase_version = "28.1.0"
 }
 
 task clean(type: Delete) {

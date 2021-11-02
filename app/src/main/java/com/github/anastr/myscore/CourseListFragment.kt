@@ -10,9 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.github.anastr.domain.constant.MAX_COURSES
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
-import com.github.anastr.myscore.util.MAX_COURSES
 import com.github.anastr.myscore.viewmodel.CourseListViewModel
 import com.github.anastr.myscore.viewmodel.State
 import com.google.android.material.transition.MaterialSharedAxis

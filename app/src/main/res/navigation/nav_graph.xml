@@ -37,7 +37,7 @@
             app:argType="long" />
         <argument
             android:name="semester"
-            app:argType="com.github.anastr.myscore.room.entity.Semester" />
+            app:argType="com.github.anastr.domain.entities.Semester" />
     </fragment>
     <dialog
         android:id="@+id/courseDialog"

@@ -2,10 +2,10 @@ package com.github.anastr.myscore.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.github.anastr.data.room.AppDatabase
+import com.github.anastr.domain.constant.MAX_YEARS
+import com.github.anastr.domain.repositories.WriteCourseRepo
 import com.github.anastr.myscore.CourseMode
-import com.github.anastr.myscore.repository.CourseRepository
-import com.github.anastr.myscore.room.AppDatabase
-import com.github.anastr.myscore.util.MAX_YEARS
 import com.github.anastr.myscore.util.MainCoroutineRule
 import com.github.anastr.myscore.util.testCourse
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -38,7 +38,7 @@ class CourseViewModelTest {
     lateinit var appDatabase: AppDatabase
 
     @Inject
-    lateinit var courseRepository: CourseRepository
+    lateinit var courseRepository: WriteCourseRepo
 
     @Before
     fun setUp() = coroutineRule.testDispatcher.runBlockingTest {
