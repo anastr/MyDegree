@@ -6,10 +6,10 @@ import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.domain.entities.db.UniversityDataEntity
 import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.domain.repositories.FirebaseRepo
-import com.github.anastr.myscore.firebase.toCourse
-import com.github.anastr.myscore.firebase.toHashMap
-import com.github.anastr.myscore.firebase.toYear
-import com.github.anastr.myscore.util.await
+import com.github.anastr.data.mappers.toCourse
+import com.github.anastr.data.mappers.toHashMap
+import com.github.anastr.data.mappers.toYear
+import com.github.anastr.data.utils.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.ktx.firestore

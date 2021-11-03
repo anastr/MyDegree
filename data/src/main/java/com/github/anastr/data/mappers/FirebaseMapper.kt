@@ -1,12 +1,12 @@
-package com.github.anastr.myscore.firebase
+package com.github.anastr.data.mappers
 
+import com.github.anastr.data.utils.getBoolean
+import com.github.anastr.data.utils.getInt
+import com.github.anastr.data.utils.getLong
+import com.github.anastr.data.utils.getString
 import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.domain.entities.db.Year
-import com.github.anastr.myscore.util.getBoolean
-import com.github.anastr.myscore.util.getInt
-import com.github.anastr.myscore.util.getLong
-import com.github.anastr.myscore.util.getString
 
 fun Year.toHashMap(): HashMap<String, Any> = hashMapOf(
     "uid" to uid,

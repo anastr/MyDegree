@@ -1,4 +1,4 @@
-package com.github.anastr.myscore.util
+package com.github.anastr.data.utils
 
 import androidx.annotation.WorkerThread
 import com.google.android.gms.tasks.Task

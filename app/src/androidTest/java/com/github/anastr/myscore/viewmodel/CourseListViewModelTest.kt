@@ -37,7 +37,7 @@ class CourseListViewModelTest {
     private val coroutineRule = MainCoroutineRule()
 
     @get:Rule
-    val rule = RuleChain.outerRule(hiltRule)
+    val rule: RuleChain = RuleChain.outerRule(hiltRule)
         .around(instantTaskExecutorRule)
         .around(coroutineRule)
 

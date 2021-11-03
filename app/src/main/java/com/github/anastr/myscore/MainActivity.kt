@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(),
     private var currentYearId: Long = -1L
     private var currentSemester: Semester = Semester.FirstSemester
 
-    private val navController get() = findNavController(R.id.nav_host_fragment)
+    private lateinit var navController: NavController
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
@@ -71,6 +71,10 @@ class MainActivity : AppCompatActivity(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         binding.content.fab.rapidClickListener {
             if (currentYearId == -1L) {

@@ -23,7 +23,9 @@
                 android:maxLines="1"
                 android:maxLength="30"
                 android:singleLine="true"
-                android:selectAllOnFocus="true" />
+                android:selectAllOnFocus="true"
+                android:inputType="text"
+                android:autofillHints="name" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,7 +50,8 @@
                     android:inputType="number"
                     android:maxLength="3"
                     android:maxLines="1"
-                    android:selectAllOnFocus="true" />
+                    android:selectAllOnFocus="true"
+                    android:importantForAutofill="no" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,7 +84,8 @@
                     android:inputType="number"
                     android:maxLength="3"
                     android:maxLines="1"
-                    android:selectAllOnFocus="true" />
+                    android:selectAllOnFocus="true"
+                    android:importantForAutofill="no" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

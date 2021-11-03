@@ -8,8 +8,8 @@ import androidx.work.WorkerParameters
 import com.github.anastr.data.datasource.DatabaseDao
 import com.github.anastr.data.models.DegreeDocument
 import com.github.anastr.domain.constant.FIRESTORE_DEGREES_COLLECTION
-import com.github.anastr.myscore.firebase.toHashMap
-import com.github.anastr.myscore.util.await
+import com.github.anastr.data.mappers.toHashMap
+import com.github.anastr.data.utils.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase

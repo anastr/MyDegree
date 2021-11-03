@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.github.anastr.data.utils.formattedScore
+import com.github.anastr.data.utils.swap
 import com.github.anastr.myscore.databinding.ItemYearBinding
 import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.entities.db.Year

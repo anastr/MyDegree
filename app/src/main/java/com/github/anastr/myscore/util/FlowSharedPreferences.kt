@@ -13,11 +13,11 @@ private fun <T> SharedPreferences.internalFlow(
     getObj: SharedPreferences.() -> T
 ): Flow<T> = callbackFlow {
     // Send the current value.
-    offer(getObj(this@internalFlow))
+    trySend(getObj(this@internalFlow))
     val preferenceChangeListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
             if (changedKey == key) {
-                offer(getObj(this@internalFlow))
+                trySend(getObj(this@internalFlow))
             }
         }
     // Send new value when it changes.

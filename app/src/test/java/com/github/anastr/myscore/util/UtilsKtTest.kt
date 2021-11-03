@@ -1,5 +1,7 @@
 package com.github.anastr.myscore.util
 
+import com.github.anastr.data.utils.formattedScore
+import com.github.anastr.data.utils.swap
 import com.github.anastr.domain.constant.MAX_YEARS
 import org.junit.Assert.assertEquals
 import org.junit.Test
