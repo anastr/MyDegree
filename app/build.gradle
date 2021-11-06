@@ -1,12 +1,12 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: "androidx.navigation.safeargs.kotlin"
-
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
 
 android {
     compileSdkVersion 31
@@ -21,8 +21,8 @@ android {
         multiDexEnabled true
         minSdkVersion 17
         targetSdkVersion 31
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.41"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "com.github.anastr.myscore.util.HiltTestRunner"
