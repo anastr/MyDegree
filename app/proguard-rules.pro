@@ -22,8 +22,8 @@
 
 
 
-### Firestore
--keep class com.github.anastr.myscore.firebase.documents.** { *; }
+### Models
+-keep class com.github.anastr.data.models.** { *; }
 
 ### Default arge for navigation component
 -keepnames class com.github.anastr.domain.entities.Semester
