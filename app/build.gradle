@@ -21,8 +21,8 @@ android {
         multiDexEnabled true
         minSdkVersion 17
         targetSdkVersion 31
-        versionCode 6
-        versionName "1.41"
+        versionCode 7
+        versionName "1.42"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "com.github.anastr.myscore.util.HiltTestRunner"
