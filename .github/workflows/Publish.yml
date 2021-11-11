@@ -36,9 +36,6 @@ jobs:
           target: google_apis
           script: ./gradlew connectedCheck --stacktrace
 
-      - name: Build project
-        run: ./gradlew build
-
       - name: Build release aab
         run: ./gradlew bundleRelease
 
