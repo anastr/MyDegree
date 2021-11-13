@@ -22,4 +22,9 @@
         android:orderInCategory="100"
         android:title="@string/receive_backup"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/signIn"
+        android:orderInCategory="100"
+        android:title="@string/sign_in_to_backup"
+        app:showAsAction="never" />
 </menu>

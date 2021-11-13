@@ -66,6 +66,7 @@
     <!-- About -->
     <string name="send_backup">رفع نسخة اتياطية</string>
     <string name="receive_backup">استرداد نسخة احتياطية</string>
+    <string name="sign_in_to_backup">سجّل دخول لرفع نسخة احتياطية</string>
 
     <!-- Messages -->
     <string name="message_need_vpn">فشل الاتصال بالمخدم، قد تحتاج إلى VPN</string>

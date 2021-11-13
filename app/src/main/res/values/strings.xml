@@ -72,6 +72,7 @@
     <string name="developer_on_linkedin" translatable="false">Developer on Linkedin</string>
     <string name="send_backup">Upload backup</string>
     <string name="receive_backup">Receive backup</string>
+    <string name="sign_in_to_backup">Sign in to upload backup</string>
 
     <!-- Messages -->
     <string name="message_need_vpn">Connection failed, you may need a VPN</string>

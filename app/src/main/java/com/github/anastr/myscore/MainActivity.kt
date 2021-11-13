@@ -131,6 +131,7 @@ class MainActivity : AppCompatActivity(),
                     mainViewModel.firebaseStateFlow.collect { state ->
                         when (state) {
                             is FirebaseState.GoogleLoginSucceeded -> {
+                                invalidateOptionsMenu()
                                 MaterialAlertDialogBuilder(this@MainActivity)
                                     .setMessage(
                                         String.format(
@@ -218,13 +219,25 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        val signInMenuItem = menu.findItem(R.id.signIn)
+        val sendBackupMenuItem = menu.findItem(R.id.sendBackup)
+        val receiveBackupMenuItem = menu.findItem(R.id.receiveBackup)
+
+        val isGoogleSignedIn = isGoogleSignedIn()
+        signInMenuItem.isVisible = !isGoogleSignedIn
+        sendBackupMenuItem.isVisible = isGoogleSignedIn
+        receiveBackupMenuItem.isVisible = isGoogleSignedIn
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.signIn -> {
+                registerWithGoogle()
+                return true
+            }
             R.id.sendBackup -> {
-                if (isLoadingOrNotAuth()) return true
+                if (isLoading()) return true
                 MaterialAlertDialogBuilder(this)
                     .setMessage(R.string.send_backup_warning_message)
                     .setPositiveButton(R.string._continue) { _, _ -> mainViewModel.sendBackup() }
@@ -233,7 +246,7 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.receiveBackup -> {
-                if (isLoadingOrNotAuth()) return true
+                if (isLoading()) return true
                 MaterialAlertDialogBuilder(this)
                     .setMessage(R.string.receive_data_warning_message)
                     .setPositiveButton(R.string.receive) { _, _ -> mainViewModel.receiveBackup() }
@@ -247,18 +260,17 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun isLoadingOrNotAuth(): Boolean {
-        if (loading) {
+    private fun isLoading(): Boolean {
+        return if (loading) {
             Toast.makeText(this, getString(R.string.loading_in_progress), Toast.LENGTH_SHORT)
                 .show()
-            return true
+             true
+        } else {
+            false
         }
-        if (auth.currentUser == null) {
-            registerWithGoogle()
-            return true
-        }
-        return false
     }
+
+    private fun isGoogleSignedIn(): Boolean = auth.currentUser != null
 
     fun registerWithGoogle() {
         googleSignInLauncher.launch(0)
