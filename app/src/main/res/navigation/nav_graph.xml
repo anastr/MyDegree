@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/year_page_fragment"
-        android:name="com.github.anastr.myscore.YearListFragment"
+        android:name="com.github.anastr.myscore.fragments.YearListFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_year_list">
         <action
@@ -16,14 +16,14 @@
     </fragment>
     <fragment
         android:id="@+id/chart_page_fragment"
-        android:name="com.github.anastr.myscore.ChartFragment"
+        android:name="com.github.anastr.myscore.fragments.ChartFragment"
         android:label="@string/title_chart"
         tools:layout="@layout/fragment_chart">
 
     </fragment>
     <fragment
         android:id="@+id/courseListFragment"
-        android:name="com.github.anastr.myscore.CourseListFragment"
+        android:name="com.github.anastr.myscore.fragments.CourseListFragment"
         android:label="{title}"
         tools:layout="@layout/fragment_course_list" >
         <action
@@ -49,11 +49,11 @@
     </dialog>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.github.anastr.myscore.SettingsFragment"
+        android:name="com.github.anastr.myscore.fragments.SettingsFragment"
         android:label="@string/title_settings" />
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.github.anastr.myscore.AboutFragment"
+        android:name="com.github.anastr.myscore.fragments.AboutFragment"
         android:label="@string/title_about"
         tools:layout="@layout/fragment_about" />
 </navigation>

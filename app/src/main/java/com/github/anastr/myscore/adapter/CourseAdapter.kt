@@ -9,11 +9,11 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.github.anastr.myscore.CourseListFragmentDirections
+import com.github.anastr.domain.entities.db.Course
 import com.github.anastr.myscore.CourseMode
 import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.ItemCourseBinding
-import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.myscore.fragments.CourseListFragmentDirections
 import com.github.anastr.myscore.util.rapidClickListener
 import java.util.*
 

@@ -1,4 +1,4 @@
-package com.github.anastr.myscore
+package com.github.anastr.myscore.fragments
 
 import android.content.Intent
 import android.net.Uri
@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.FragmentAboutBinding
 import com.google.android.material.transition.MaterialFadeThrough
 

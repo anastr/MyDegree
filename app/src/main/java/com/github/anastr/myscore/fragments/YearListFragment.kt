@@ -1,4 +1,4 @@
-package com.github.anastr.myscore
+package com.github.anastr.myscore.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +16,8 @@ import com.github.anastr.domain.constant.MAX_YEARS
 import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.domain.entities.db.YearWithSemester
+import com.github.anastr.myscore.MainActivity
+import com.github.anastr.myscore.R
 import com.github.anastr.myscore.adapter.YearAdapter
 import com.github.anastr.myscore.databinding.FragmentYearListBinding
 import com.github.anastr.myscore.util.drag.DragItemTouchHelper

@@ -1,4 +1,4 @@
-package com.github.anastr.myscore
+package com.github.anastr.myscore.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.domain.constant.MAX_COURSES
+import com.github.anastr.myscore.MainActivity
+import com.github.anastr.myscore.R
 import com.github.anastr.myscore.adapter.CourseAdapter
 import com.github.anastr.myscore.databinding.FragmentCourseListBinding
 import com.github.anastr.myscore.viewmodel.CourseListViewModel

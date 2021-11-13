@@ -21,6 +21,8 @@ import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.enums.ThemeMode
 import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.firebase.GoogleSignInContent
+import com.github.anastr.myscore.fragments.CourseListFragmentArgs
+import com.github.anastr.myscore.fragments.CourseListFragmentDirections
 import com.github.anastr.myscore.util.*
 import com.github.anastr.myscore.viewmodel.ErrorCode
 import com.github.anastr.myscore.viewmodel.FirebaseState

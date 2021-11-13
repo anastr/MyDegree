@@ -1,4 +1,4 @@
-package com.github.anastr.myscore
+package com.github.anastr.myscore.fragments
 
 import android.os.Bundle
 import android.view.View
@@ -12,6 +12,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.work.*
 import com.github.anastr.data.workers.UploadBackupWorker
+import com.github.anastr.myscore.MainActivity
+import com.github.anastr.myscore.R
 import com.github.anastr.myscore.util.pref.NumberPickerPreference
 import com.github.anastr.myscore.util.pref.NumberPreferenceDialogFragmentCompat
 import com.github.anastr.myscore.viewmodel.MainViewModel

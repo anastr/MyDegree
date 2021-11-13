@@ -1,4 +1,4 @@
-package com.github.anastr.myscore
+package com.github.anastr.myscore.fragments
 
 import android.graphics.Color
 import android.os.Bundle
@@ -11,9 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.github.anastr.myscore.databinding.FragmentChartBinding
-import com.github.anastr.domain.entities.db.YearWithSemester
 import com.github.anastr.data.utils.formattedScore
+import com.github.anastr.domain.entities.db.YearWithSemester
+import com.github.anastr.myscore.R
+import com.github.anastr.myscore.databinding.FragmentChartBinding
 import com.github.anastr.myscore.util.getColorFromAttr
 import com.github.anastr.myscore.util.yearsRec
 import com.github.anastr.myscore.viewmodel.State
