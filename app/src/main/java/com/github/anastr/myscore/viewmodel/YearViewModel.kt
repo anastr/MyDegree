@@ -1,13 +1,12 @@
 package com.github.anastr.myscore.viewmodel
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.data.hilt.DefaultDispatcher
 import com.github.anastr.domain.entities.db.Year
 import com.github.anastr.domain.entities.db.YearWithSemester
+import com.github.anastr.domain.repositories.PassDegreeRepo
 import com.github.anastr.domain.repositories.YearRepo
-import com.github.anastr.myscore.util.intFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,13 +17,13 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class YearViewModel @Inject constructor(
-    sharedPreferences: SharedPreferences,
+    passDegreeRepo: PassDegreeRepo,
     private val yearRepository: YearRepo,
     @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val passDegree: SharedFlow<Int> =
-        sharedPreferences.intFlow("passDegree", 60)
+        passDegreeRepo.getPassDegree()
         // Do preference job on a worker thread.
         .flowOn(defaultDispatcher)
         // Share the same instance of passDegree Flow between yearsFlow and finalDegreeFlow.

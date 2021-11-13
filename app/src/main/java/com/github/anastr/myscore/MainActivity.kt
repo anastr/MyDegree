@@ -18,6 +18,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.github.anastr.domain.entities.Semester
+import com.github.anastr.domain.enums.ThemeMode
 import com.github.anastr.myscore.databinding.ActivityMainBinding
 import com.github.anastr.myscore.firebase.GoogleSignInContent
 import com.github.anastr.myscore.util.*
@@ -30,7 +31,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -103,12 +102,12 @@ class MainActivity : AppCompatActivity(),
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    mainViewModel.themeFlow.collect { nightMode ->
+                    mainViewModel.themeFlow.collect { themeMode ->
                         AppCompatDelegate.setDefaultNightMode(
-                            when (nightMode) {
-                                "1" -> AppCompatDelegate.MODE_NIGHT_NO
-                                "2" -> AppCompatDelegate.MODE_NIGHT_YES
-                                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            when (themeMode) {
+                                ThemeMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                                ThemeMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                                ThemeMode.FOLLOW_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                             }
                         )
                     }

@@ -1,17 +1,16 @@
 package com.github.anastr.myscore.viewmodel
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.anastr.data.hilt.DefaultDispatcher
 import com.github.anastr.domain.entities.db.UniversityDataEntity
+import com.github.anastr.domain.enums.ThemeMode
 import com.github.anastr.domain.repositories.FirebaseRepo
 import com.github.anastr.domain.repositories.MainDatabaseRepo
-import com.github.anastr.myscore.util.stringFlow
+import com.github.anastr.domain.repositories.ThemeRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    sharedPreferences: SharedPreferences,
+    themeRepo: ThemeRepo,
     private val databaseRepository: MainDatabaseRepo,
     private val firebaseRepository: FirebaseRepo,
     @DefaultDispatcher defaultDispatcher: CoroutineDispatcher,
@@ -34,9 +33,8 @@ class MainViewModel @Inject constructor(
     )
     val firebaseStateFlow: Flow<FirebaseState> = _firebaseStateFlow
 
-    @ExperimentalCoroutinesApi
-    val themeFlow: SharedFlow<String> =
-        sharedPreferences.stringFlow("themePref", "-1")
+    val themeFlow: SharedFlow<ThemeMode> =
+        themeRepo.getTheme()
             .flowOn(defaultDispatcher)
             .shareIn(
                 scope = viewModelScope,

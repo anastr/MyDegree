@@ -17,7 +17,6 @@ import com.github.anastr.myscore.viewmodel.CourseListViewModel
 import com.github.anastr.myscore.viewmodel.State
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -52,7 +51,6 @@ class CourseListFragment : Fragment() {
         return binding.root
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -105,5 +103,4 @@ class CourseListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

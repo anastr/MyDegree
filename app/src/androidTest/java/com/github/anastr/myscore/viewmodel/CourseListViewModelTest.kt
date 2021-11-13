@@ -1,12 +1,12 @@
 package com.github.anastr.myscore.viewmodel
 
-import android.content.SharedPreferences
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.github.anastr.data.room.AppDatabase
 import com.github.anastr.domain.constant.MAX_YEARS
 import com.github.anastr.domain.entities.Semester
 import com.github.anastr.domain.entities.db.Course
+import com.github.anastr.domain.repositories.PassDegreeRepo
 import com.github.anastr.domain.repositories.ReadCourseRepo
 import com.github.anastr.myscore.util.MainCoroutineRule
 import com.github.anastr.myscore.util.testCoursesList
@@ -16,6 +16,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
@@ -54,8 +55,8 @@ class CourseListViewModelTest {
         appDatabase.databaseDao().insertNewYear(MAX_YEARS)
         appDatabase.courseDao().insertAll(*testCoursesList.toTypedArray())
 
-        val sharedPreferences = mockk<SharedPreferences>(relaxed = true)
-        every { sharedPreferences.getInt("passDegree", any()) } returns TEST_PASS_DEGREE
+        val passDegreeRepo = mockk<PassDegreeRepo>(relaxed = true)
+        every { passDegreeRepo.getPassDegree() } returns flow { emit(TEST_PASS_DEGREE) }
         val savedStateHandle: SavedStateHandle = SavedStateHandle().apply {
             set("yearId", 1L)
             set("semester", Semester.FirstSemester)
@@ -63,7 +64,7 @@ class CourseListViewModelTest {
 
         viewModel = CourseListViewModel(
             savedStateHandle = savedStateHandle,
-            sharedPreferences = sharedPreferences,
+            passDegreeRepo = passDegreeRepo,
             courseRepository = courseRepository,
             defaultDispatcher = coroutineRule.testDispatcher,
         )
