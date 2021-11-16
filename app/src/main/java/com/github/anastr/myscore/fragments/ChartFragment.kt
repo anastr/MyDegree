@@ -9,13 +9,12 @@ import androidx.core.view.ViewGroupCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.github.anastr.data.utils.formattedScore
 import com.github.anastr.domain.entities.db.YearWithSemester
 import com.github.anastr.myscore.R
 import com.github.anastr.myscore.databinding.FragmentChartBinding
 import com.github.anastr.myscore.util.getColorFromAttr
+import com.github.anastr.myscore.util.launchAndRepeatOnLifecycle
 import com.github.anastr.myscore.util.yearsRec
 import com.github.anastr.myscore.viewmodel.State
 import com.github.anastr.myscore.viewmodel.YearViewModel
@@ -64,8 +63,8 @@ class ChartFragment : Fragment() {
 
         binding.speedometer.speedTextListener = { it.formattedScore() }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        launchAndRepeatOnLifecycle(Lifecycle.State.STARTED) {
+            launch {
                 yearViewModel.yearsFlow.collect { yearsState ->
                     when (yearsState) {
                         is State.Error -> {
@@ -82,13 +81,11 @@ class ChartFragment : Fragment() {
                     }
                 }
             }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            launch {
                 yearViewModel.finalDegreeFlow.collect {
                     binding.speedometer.speedTo(
                         speed = it,
-                        moveDuration = animationDuration.toLong()
+                        moveDuration = animationDuration.toLong(),
                     )
                 }
             }

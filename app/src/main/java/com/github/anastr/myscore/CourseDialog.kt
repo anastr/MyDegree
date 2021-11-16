@@ -7,10 +7,9 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.github.anastr.myscore.databinding.DialogCourseBinding
 import com.github.anastr.domain.entities.Semester
+import com.github.anastr.myscore.databinding.DialogCourseBinding
+import com.github.anastr.myscore.util.launchAndRepeatOnLifecycle
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseDialogState
 import com.github.anastr.myscore.viewmodel.CourseViewModel
@@ -87,8 +86,8 @@ class CourseDialog : DialogFragment() {
             }
         }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        launchAndRepeatOnLifecycle(Lifecycle.State.STARTED) {
+            launch {
                 courseViewModel.courseFlow.collect { state ->
                     when (state) {
                         State.Loading -> {
@@ -114,11 +113,9 @@ class CourseDialog : DialogFragment() {
                     }
                 }
             }
-        }
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            launch {
                 courseViewModel.courseDialogState.collect { errorState ->
-                    when(errorState) {
+                    when (errorState) {
                         CourseDialogState.Dismiss -> dismiss()
                         CourseDialogState.EmptyName -> {
                             binding.nameEditText.error = getString(R.string.this_field_required)
@@ -138,7 +135,8 @@ class CourseDialog : DialogFragment() {
                             ).show()
                         }
                         is CourseDialogState.ExceptionDialog -> {
-                            Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
