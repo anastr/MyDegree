@@ -146,7 +146,7 @@ class CourseDialog : DialogFragment() {
 
     private fun delete() {
         MaterialAlertDialogBuilder(requireContext())
-            .setMessage(R.string._new)
+            .setMessage(R.string.delete_course_message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete) { _, _ ->
                 courseViewModel.deleteCourse()

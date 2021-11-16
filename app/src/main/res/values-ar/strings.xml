@@ -16,7 +16,7 @@
     <string name="chart">المخطط</string>
     <string name="semester_1">الفصل الأول</string>
     <string name="semester_2">الفصل الثاني</string>
-    <string name="delete_year_message">ستفقد جميع بيانات المواد المسجلة في هذه السنة، هل تريد الحذف؟</string>
+    <string name="delete_year_message">ستفقد جميع بيانات المقررات المسجلة في هذه السنة، هل تريد الحذف؟</string>
 
     <string name="_new">جديد</string>
     <string name="edit">تعديل</string>
@@ -26,6 +26,7 @@
     <string name="cancel">إلغاء</string>
     <string name="receive">استرداد</string>
     <string name="_continue" >تابع</string>
+    <string name="delete_course_message">هل تريد حذف هذا المقرر؟</string>
 
     <string name="this_field_required">هذا الحقل مطلوب</string>
     <string name="one_degree_is_required">يجب ادخال علامة النظري أو العملي على الأقل</string>

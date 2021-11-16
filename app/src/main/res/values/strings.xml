@@ -25,6 +25,7 @@
     <string name="cancel">Cancel</string>
     <string name="receive">Receive</string>
     <string name="_continue" >Continue</string>
+    <string name="delete_course_message">Do you want to delete this course?</string>
 
     <string name="this_field_required">This field is required.</string>
     <string name="one_degree_is_required">You must enter theoretical or practical degree at least.</string>
