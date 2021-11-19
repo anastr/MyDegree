@@ -18,7 +18,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.io.Serializable
 
 sealed class CourseMode : Serializable {
@@ -77,58 +76,56 @@ class CourseBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        launchAndRepeatOnLifecycle(Lifecycle.State.STARTED) {
-            launch {
-                courseViewModel.courseFlow.collect { state ->
-                    when (state) {
-                        State.Loading -> {
-                            // Do nothing!
-                        }
-                        is State.Error -> {
-                            Toast.makeText(
-                                requireContext(),
-                                state.error.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            dismiss()
-                        }
-                        is State.Success -> {
-                            binding.nameEditText.setText(state.data.name)
-                            if (state.data.theoreticalScore != 0)
-                                binding.theoreticalTextInput.editText?.setText(state.data.theoreticalScore.toString())
-                            if (state.data.practicalScore != 0)
-                                binding.practicalTextInput.editText?.setText(state.data.practicalScore.toString())
-                            binding.theoreticalCheckBox.isChecked = state.data.hasTheoretical
-                            binding.practicalCheckBox.isChecked = state.data.hasPractical
-                        }
+        launchAndRepeatOnLifecycle(Lifecycle.State.CREATED) {
+            courseViewModel.courseFlow.collect { state ->
+                when (state) {
+                    State.Loading -> {
+                        // Do nothing!
+                    }
+                    is State.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            state.error.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        dismiss()
+                    }
+                    is State.Success -> {
+                        binding.nameEditText.setText(state.data.name)
+                        if (state.data.theoreticalScore != 0)
+                            binding.theoreticalTextInput.editText?.setText(state.data.theoreticalScore.toString())
+                        if (state.data.practicalScore != 0)
+                            binding.practicalTextInput.editText?.setText(state.data.practicalScore.toString())
+                        binding.theoreticalCheckBox.isChecked = state.data.hasTheoretical
+                        binding.practicalCheckBox.isChecked = state.data.hasPractical
                     }
                 }
             }
-            launch {
-                courseViewModel.courseDialogState.collect { errorState ->
-                    when (errorState) {
-                        CourseDialogState.Dismiss -> dismiss()
-                        CourseDialogState.EmptyName -> {
-                            binding.nameEditText.error = getString(R.string.this_field_required)
-                        }
-                        CourseDialogState.OneDegreeIsRequired -> {
-                            Toast.makeText(
-                                activity,
-                                getString(R.string.one_degree_is_required),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        CourseDialogState.DegreeBiggerThan100 -> {
-                            Toast.makeText(
-                                activity,
-                                getString(R.string.degree_should_be_smaller_than_100),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        is CourseDialogState.ExceptionDialog -> {
-                            Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT)
-                                .show()
-                        }
+        }
+        launchAndRepeatOnLifecycle(Lifecycle.State.STARTED) {
+            courseViewModel.courseDialogState.collect { errorState ->
+                when (errorState) {
+                    CourseDialogState.Dismiss -> dismiss()
+                    CourseDialogState.EmptyName -> {
+                        binding.nameEditText.error = getString(R.string.this_field_required)
+                    }
+                    CourseDialogState.OneDegreeIsRequired -> {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.one_degree_is_required),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    CourseDialogState.DegreeBiggerThan100 -> {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.degree_should_be_smaller_than_100),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is CourseDialogState.ExceptionDialog -> {
+                        Toast.makeText(activity, errorState.e.message, Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
