@@ -8,4 +8,14 @@
         <item name="android:textColorSecondary">@color/colorDots</item>
     </style>
 
+    <style name="ModalBottomSheetDialog" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.BottomSheetShape</item>
+        <item name="behavior_peekHeight">500dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.BottomSheetShape" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
 </resources>

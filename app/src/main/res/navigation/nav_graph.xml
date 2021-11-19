@@ -41,8 +41,8 @@
     </fragment>
     <dialog
         android:id="@+id/courseDialog"
-        android:name="com.github.anastr.myscore.CourseDialog"
-        tools:layout="@layout/dialog_course" >
+        android:name="com.github.anastr.myscore.CourseBottomSheet"
+        tools:layout="@layout/bottom_sheet_course" >
         <argument
             android:name="courseMode"
             app:argType="com.github.anastr.myscore.CourseMode" />

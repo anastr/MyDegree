@@ -1,19 +1,20 @@
 package com.github.anastr.myscore
 
-import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import com.github.anastr.domain.entities.Semester
-import com.github.anastr.myscore.databinding.DialogCourseBinding
+import com.github.anastr.myscore.databinding.BottomSheetCourseBinding
 import com.github.anastr.myscore.util.launchAndRepeatOnLifecycle
 import com.github.anastr.myscore.util.rapidClickListener
 import com.github.anastr.myscore.viewmodel.CourseDialogState
 import com.github.anastr.myscore.viewmodel.CourseViewModel
 import com.github.anastr.myscore.viewmodel.State
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -26,9 +27,9 @@ sealed class CourseMode : Serializable {
 }
 
 @AndroidEntryPoint
-class CourseDialog : DialogFragment() {
+class CourseBottomSheet : BottomSheetDialogFragment() {
 
-    private lateinit var binding: DialogCourseBinding
+    private lateinit var binding: BottomSheetCourseBinding
 
     private val courseViewModel: CourseViewModel by viewModels()
 
@@ -45,25 +46,15 @@ class CourseDialog : DialogFragment() {
                 binding.practicalTextInput.editText?.text?.toString()?.toIntOrNull() ?: 0
             else 0
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
-            val builder = MaterialAlertDialogBuilder(it)
-            binding = DialogCourseBinding.inflate(requireActivity().layoutInflater)
-            val view = binding.root
 
-            initUi()
-
-            builder.apply {
-                setView(view)
-                setTitle(
-                    when (courseViewModel.courseMode) {
-                        is CourseMode.New -> R.string._new
-                        is CourseMode.Edit -> R.string.edit
-                    }
-                )
-            }
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = BottomSheetCourseBinding.inflate(requireActivity().layoutInflater)
+        initUi()
+        return binding.root
     }
 
     private fun initUi() {
